@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blossom & Koi Garden — Map</title>
+  <link rel="stylesheet" href="css/map.css" />
+</head>
+<body>
+
+  <div class="game-root">
+
+    <!-- ── BOARD (full screen base) ── -->
+    <div class="board-wrap">
+      <img class="board-img"
+           src="assets/images/map_game/background_game.png"
+           alt="Game Board" />
+      <div id="spaces-container"></div>
+      <div id="tokens-container"></div>
+    </div>
+
+    <!-- ── LOGO (top center) ── -->
+    <div class="map-logo">
+      <img src="assets/images/home/logo.png" alt="Blossom & Koi Garden" />
+    </div>
+
+    <!-- ── SCORE BAR (top right) ── -->
+    <div class="score-bar" id="score-bar"></div>
+
+    <!-- ── DICE BAR (bottom center) ── -->
+    <div class="dice-bar">
+      <img class="dice-bar-bg"
+           src="assets/images/map_game/rolldice_bar.png"
+           alt="" />
+      <div class="dice-bar-content">
+        <span class="player-label" id="current-player-label">PLAYER 1</span>
+        <button class="roll-btn" id="roll-btn" onclick="rollDice()">
+          <img src="assets/images/map_game/rolldice_button.png" alt="Roll Dice" />
+        </button>
+        <img class="dice-face" id="dice-face"
+             src="assets/images/map_game/1dice.png" alt="Dice" />
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/map.js"></script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+/* ============================================================
+   MAP.CSS — Full Game Board Screen
+============================================================ */
+
+/* ── Reset ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+/* ============================================================
+   ROOT — fills entire viewport
+============================================================ */
+.game-root {
+  position: relative;
+  width:  100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ============================================================
+   BOARD — full screen background
+============================================================ */
+.board-wrap {
+  position: absolute;
+  inset: 0;
+}
+
+.board-img {
+  position: absolute;
+  inset: 0;
+  width:  100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+#spaces-container,
+#tokens-container {
+  position: absolute;
+  inset: 0;
+}
+
+/* ── Normal space ── */
+.space {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width:  4vw;
+  height: 4vw;
+  min-width:  32px;
+  min-height: 32px;
+  max-width:  56px;
+  max-height: 56px;
+}
+.space img {
+  width:  100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ── Start / End — bigger ── */
+.space-large {
+  width:  7vw;
+  height: 7vw;
+  min-width:  60px;
+  min-height: 60px;
+  max-width:  110px;
+  max-height: 110px;
+}
+
+/* ── Player token ── */
+.player-token {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width:  5vw;
+  height: 5vw;
+  min-width:  40px;
+  min-height: 40px;
+  max-width:  72px;
+  max-height: 72px;
+  transition: left 0.45s ease, top 0.45s ease;
+  z-index: 20;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.5));
+}
+.player-token img {
+  width:  100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ============================================================
+   LOGO — top center, floats gently
+============================================================ */
+.map-logo {
+  position: absolute;
+  top: 1.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  animation: floatY 3.5s ease-in-out infinite;
+  pointer-events: none;
+}
+.map-logo img {
+  width: clamp(180px, 350vw, 380px);
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.45));
+}
+
+/* ============================================================
+   SCORE BAR — top right, shows each player's score
+============================================================ */
+.score-bar {
+  position: absolute;
+  top: 2%;
+  right: 1.5%;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.score-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 245, 220, 0.85);
+  border: 2px solid rgba(180, 120, 40, 0.5);
+  border-radius: 999px;
+  padding: 5px 14px 5px 6px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+  transition: border-color 0.3s, box-shadow 0.3s;
+  min-width: clamp(120px, 14vw, 200px);
+}
+.score-chip.active-turn {
+  border-color: #e8a43c;
+  box-shadow: 0 0 14px rgba(232,164,60,0.6);
+}
+
+.score-chip .token-thumb {
+  width:  clamp(28px, 3.5vw, 48px);
+  height: clamp(28px, 3.5vw, 48px);
+  border-radius: 50%;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.score-chip .chip-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.score-chip .chip-name {
+  font-family: Georgia, serif;
+  font-size: clamp(10px, 1.1vw, 15px);
+  font-weight: bold;
+  color: #5d3a00;
+}
+.score-chip .chip-score {
+  font-family: Georgia, serif;
+  font-size: clamp(11px, 1.3vw, 17px);
+  font-weight: bold;
+  color: #c07800;
+}
+
+/* ============================================================
+   DICE BAR — bottom center
+============================================================ */
+.dice-bar {
+  position: absolute;
+  bottom: 0%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(300px, 60vw, 6600px);
+  z-index: 30;
+}
+
+.dice-bar-bg {
+  width: 100%;
+  display: block;
+  filter: drop-shadow(0 4px 18px rgba(0,0,0,0.5));
+}
+
+.dice-bar-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1.8vw, 24px);
+  padding: 0 7%;
+}
+
+/* "PLAYER X" label */
+.player-label {
+  font-family: Georgia, serif;
+  font-size: clamp(10px, 1.3vw, 17px);
+  font-weight: bold;
+  color: #5d3a00;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(255,220,120,0.5);
+  min-width: 80px;
+  text-align: center;
+  position: relative;
+  left: 155px;  
+  top: -30px;
+}
+
+/* Roll Dice button */
+.roll-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  position: relative;
+  margin-top: 45px;
+  margin-right: 25px;
+}
+
+
+.roll-btn img {
+  width: clamp(100px, 11vw, 210px);
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.4));
+}
+.roll-btn:hover   { transform: scale(1.07); filter: brightness(1.1); }
+.roll-btn:active  { transform: scale(0.95); }
+.roll-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
+
+/* Dice face */
+.dice-face {
+  width: clamp(34px, 4.5vw, 64px);
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+  position: relative;
+  left: -55px;  /* ← nudge left */
+  top: 23px;
+  /* margin-right: 50px;  */
+}
+.dice-face.rolling {
+  animation: spin 0.15s linear infinite;
+}
+
+/* ============================================================
+   ANIMATIONS
+============================================================ */
+@keyframes floatY {
+  0%, 100% { transform: translateX(-50%) translateY(0px);  }
+  50%       { transform: translateX(-50%) translateY(-8px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg);   }
+  to   { transform: rotate(360deg); }
+}

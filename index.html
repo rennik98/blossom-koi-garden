@@ -4,164 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Blossom & Koi Garden</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      background: #f5c8a0;
-    }
-
-    /* BACKGROUND */
-    .bg {
-      position: absolute;
-      inset: 0;
-      background-image: url('assets/images/home/BGHome_1920x1080.png');
-      background-size: cover;
-      background-position: center center;
-      z-index: 0;
-    }
-
-    /* FALLING PETALS */
-    .petals {
-      position: absolute; inset: 0;
-      pointer-events: none; z-index: 2; overflow: hidden;
-    }
-    .petal {
-      position: absolute; top: -20px;
-      border-radius: 50% 0 50% 0; opacity: 0;
-      animation: petalFall linear infinite;
-    }
-    .petal:nth-child(odd)  { background: rgba(255,182,193,0.75); }
-    .petal:nth-child(even) { background: rgba(220,150,190,0.65); }
-    /* ... (Falling petal animation values) ... */
-    .petal:nth-child(1)  { left:5%;  width:9px;  height:9px;  animation-duration:7s;   animation-delay:0s;   }
-    .petal:nth-child(2)  { left:14%; width:12px; height:12px; animation-duration:9s;   animation-delay:1.2s; }
-    .petal:nth-child(3)  { left:24%; width:7px;  height:7px;  animation-duration:6.5s; animation-delay:2.4s; }
-    .petal:nth-child(4)  { left:35%; width:10px; height:10px; animation-duration:8s;   animation-delay:0.6s; }
-    .petal:nth-child(5)  { left:48%; width:8px;  height:8px;  animation-duration:7.5s; animation-delay:3.1s; }
-    .petal:nth-child(6)  { left:58%; width:11px; height:11px; animation-duration:9.5s; animation-delay:1.8s; }
-    .petal:nth-child(7)  { left:69%; width:8px;  height:8px;  animation-duration:7s;   animation-delay:4.2s; }
-    .petal:nth-child(8)  { left:78%; width:13px; height:13px; animation-duration:10s;  animation-delay:2.8s; }
-    .petal:nth-child(9)  { left:88%; width:7px;  height:7px;  animation-duration:6s;   animation-delay:0.9s; }
-    .petal:nth-child(10) { left:11%; width:9px;  height:9px;  animation-duration:11s;  animation-delay:5.5s; }
-    .petal:nth-child(11) { left:44%; width:8px;  height:8px;  animation-duration:7.8s; animation-delay:3.7s; }
-    .petal:nth-child(12) { left:71%; width:11px; height:11px; animation-duration:8.5s; animation-delay:0.4s; }
-
-    /* UI LAYERS */
-    .ui-layer { 
-      position: absolute; 
-      inset: 0; 
-      z-index: 3; 
-      display: none; 
-    }
-    .ui-layer.active { display: block; }
-
-    /* HOME SCREEN */
-    .logo {
-      position: absolute;
-      top: 3%; left: 50%;
-      transform: translateX(-50%);
-      animation: floatY 3.5s ease-in-out infinite;
-    }
-    .logo img {
-      width: clamp(280px, 36vw, 620px);
-      filter: drop-shadow(0 4px 20px rgba(0,0,0,0.4));
-    }
-
-    .start-btn {
-      position: absolute;
-      top: 70%; left: 50%;
-      transform: translate(-50%, -50%);
-      background: none; border: none; cursor: pointer; padding: 0;
-      transition: transform 0.15s ease;
-      animation: startFloat 3.2s ease-in-out infinite;
-    }
-    .start-btn img {
-      width: clamp(260px, 32vw, 520px);
-      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5));
-    }
-
-    .bottom-btns {
-      position: absolute;
-      bottom: 5%; left: 50%;
-      transform: translateX(-50%);
-      display: flex; gap: clamp(16px, 3.5vw, 56px);
-      align-items: center;
-    }
-    .icon-btn { background: none; border: none; cursor: pointer; padding: 0; transition: transform 0.2s ease; }
-    .icon-btn img { width: clamp(64px, 8vw, 112px); filter: drop-shadow(0 4px 12px rgba(0,0,0,0.45)); }
-
-    /* SELECT PLAYER UI (ใช้วิธี Absolute เพื่อให้ขยับลงได้อิสระ) */
-    .player-selection-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: 10;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .selection-panel {
-      position: relative;
-      width: clamp(600px, 60vw, 1000px);
-      height: clamp(400px, 40vw, 600px); /* กำหนดความสูงตายตัวเพื่อให้พื้นหลังนิ่ง */
-      background: url('assets/images/select_players/select_player_count.png') no-repeat center;
-      background-size: 100% 100%;
-    }
-
-    /* กลุ่มเหรียญตัวเลข: ปรับที่ค่า top เพื่อขยับลงมา */
-    .player-options {
-      position: absolute;
-      display: flex;
-      gap: 20px; /* ระยะห่างระหว่างเหรียญ 2, 3, 4 */
-      left: 50%;
-      transform: translateX(-50%);
-      top: 40%; /* <<< ปรับค่า % นี้ให้มากขึ้นเพื่อขยับเหรียญลงมา */
-    }
-
-    .player-choice {
-      background: none; border: none; cursor: pointer; transition: transform 0.2s;
-    }
-    .player-choice img { 
-      width: clamp(120px, 12vw, 160px); /* ปรับขนาดเหรียญ */
-    }
-    .player-choice:hover { transform: scale(1.1); }
-
-    /* ปุ่ม Confirm: ปรับที่ค่า top เพื่อขยับลงมา */
-    .confirm-btn {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      background: none; border: none; cursor: pointer;
-      top: 78%; /* <<< ปรับค่า % นี้ให้มากขึ้นเพื่อขยับปุ่ม Confirm ลงมา */
-    }
-    .confirm-btn img { 
-      width: clamp(180px, 18vw, 220px);
-    }
-
-    .back-btn {
-      position: absolute;
-      bottom: 65px; right: 5%;
-      background: none; border: none; cursor: pointer;
-      display: flex; flex-direction: column; align-items: center;
-    }
-    .back-btn img { width: 200px; }
-    .back-btn span { color: #5d4037; font-weight: bold; font-size: 14px; }
-
-    /* ANIMATIONS */
-    @keyframes petalFall { 0% { opacity:0; top:-5%; transform:translateX(0) rotate(0); } 8% { opacity:0.8; } 100% { opacity:0; top:108%; transform:translateX(70px) rotate(400deg); } }
-    @keyframes floatY { 0%,100% { transform:translateX(-50%) translateY(0); } 50% { transform:translateX(-50%) translateY(-12px); } }
-    @keyframes startFloat { 0%,100% { transform:translate(-50%,-50%) translateY(0); } 50% { transform:translate(-50%,-50%) translateY(-10px); } }
-  </style>
+  <link rel="stylesheet" href="css/home.css" />
 </head>
 <body>
 
+  <!-- ── BACKGROUND ── -->
   <div class="bg"></div>
 
+  <!-- ── FALLING PETALS ── -->
   <div class="petals">
     <div class="petal"></div><div class="petal"></div><div class="petal"></div>
     <div class="petal"></div><div class="petal"></div><div class="petal"></div>
@@ -169,61 +19,64 @@
     <div class="petal"></div><div class="petal"></div><div class="petal"></div>
   </div>
 
+  <!-- ════════════════════════════
+       SCREEN 1 — HOME
+  ════════════════════════════ -->
   <div id="home-screen" class="ui-layer active">
+
     <div class="logo">
-      <img src="assets/images/home/logo.png" alt="Logo" />
+      <img src="assets/images/home/logo.png" alt="Blossom & Koi Garden" />
     </div>
 
     <button class="start-btn" onclick="openPlayerSelection()">
-      <img src="assets/images/home/start_button.png" alt="Start" />
+      <img src="assets/images/home/start_button.png" alt="Start Game" />
     </button>
 
     <div class="bottom-btns">
-      <button class="icon-btn" onclick="openSettings()"><img src="assets/images/home/setting_button.png"></button>
-      <button class="icon-btn" onclick="openAchievements()"><img src="assets/images/home/achievement_button.png"></button>
-      <button class="icon-btn" onclick="showCards()"><img src="assets/images/home/showcard_button.png"></button>
+      <button class="icon-btn" title="Settings"     onclick="openSettings()">
+        <img src="assets/images/home/setting_button.png"     alt="Settings" />
+      </button>
+      <button class="icon-btn" title="Achievements" onclick="openAchievements()">
+        <img src="assets/images/home/achievement_button.png" alt="Achievements" />
+      </button>
+      <button class="icon-btn" title="Show Cards"   onclick="showCards()">
+        <img src="assets/images/home/showcard_button.png"    alt="Show Cards" />
+      </button>
     </div>
+
   </div>
 
+  <!-- ════════════════════════════
+       SCREEN 2 — PLAYER SELECTION
+  ════════════════════════════ -->
   <div id="player-selection" class="ui-layer">
     <div class="player-selection-overlay">
       <div class="selection-panel">
-        
+
         <div class="player-options">
-          <button class="player-choice" onclick="selectCount(2)"><img src="assets/images/select_players/2player_token.png"></button>
-          <button class="player-choice" onclick="selectCount(3)"><img src="assets/images/select_players/3player_token.png"></button>
-          <button class="player-choice" onclick="selectCount(4)"><img src="assets/images/select_players/4player_token.png"></button>
+          <button class="player-choice" onclick="selectCount(2, this)">
+            <img src="assets/images/select_players/2player_token.png" alt="2 Players" />
+          </button>
+          <button class="player-choice" onclick="selectCount(3, this)">
+            <img src="assets/images/select_players/3player_token.png" alt="3 Players" />
+          </button>
+          <button class="player-choice" onclick="selectCount(4, this)">
+            <img src="assets/images/select_players/4player_token.png" alt="4 Players" />
+          </button>
         </div>
 
         <button class="confirm-btn" onclick="confirmSelection()">
-          <img src="assets/images/select_players/confirm_button.png">
+          <img src="assets/images/select_players/confirm_button.png" alt="Confirm" />
         </button>
 
         <button class="back-btn" onclick="closePlayerSelection()">
-          <img src="assets/images/select_players/back_button.png">
-          <!-- <span>BACK</span> -->
+          <img src="assets/images/select_players/back_button.png" alt="Back" />
         </button>
+
       </div>
     </div>
   </div>
 
-  <script>
-    let selectedPlayers = 0;
-
-    function openPlayerSelection() { document.getElementById('player-selection').classList.add('active'); }
-    function closePlayerSelection() { document.getElementById('player-selection').classList.remove('active'); }
-    function selectCount(num) { 
-      selectedPlayers = num; 
-      console.log('Players:', num); 
-    }
-    function confirmSelection() {
-      if(selectedPlayers > 0) alert('Game Start with ' + selectedPlayers + ' players!');
-      else alert('Please select player count.');
-    }
-    function openSettings() { console.log('Settings'); }
-    function openAchievements() { console.log('Achievements'); }
-    function showCards() { console.log('Cards'); }
-  </script>
-
+  <script src="js/home.js"></script>
 </body>
 </html>
