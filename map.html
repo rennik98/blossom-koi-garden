@@ -5,33 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Blossom & Koi Garden — Map</title>
   <link rel="stylesheet" href="css/map.css" />
+  <link rel="stylesheet" href="css/card.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Noto+Sans+Thai:wght@400;600&display=swap" rel="stylesheet" />
 </head>
 <body>
 
   <div class="game-root">
 
-    <!-- ── BOARD (full screen base) ── -->
+    <!-- ── BOARD ── -->
     <div class="board-wrap">
-      <img class="board-img"
-           src="assets/images/map_game/background_game.png"
-           alt="Game Board" />
+      <img class="board-img" src="assets/images/map_game/background_game.png" alt="Game Board" />
       <div id="spaces-container"></div>
       <div id="tokens-container"></div>
     </div>
 
-    <!-- ── LOGO (top center) ── -->
+    <!-- ── LOGO ── -->
     <div class="map-logo">
       <img src="assets/images/home/logo.png" alt="Blossom & Koi Garden" />
     </div>
 
-    <!-- ── SCORE BAR (top right) ── -->
+    <!-- ── SCORE BAR ── -->
     <div class="score-bar" id="score-bar"></div>
 
-    <!-- ── DICE BAR (bottom center) ── -->
+    <!-- ── DICE BAR ── -->
     <div class="dice-bar">
-      <img class="dice-bar-bg"
-           src="assets/images/map_game/rolldice_bar.png"
-           alt="" />
+      <img class="dice-bar-bg" src="assets/images/map_game/rolldice_bar.png" alt="" />
       <div class="dice-bar-content">
         <span class="player-label" id="current-player-label">PLAYER 1</span>
         <button class="roll-btn" id="roll-btn" onclick="rollDice()">
@@ -44,6 +42,17 @@
 
   </div>
 
+  <!-- ── CARD OVERLAY (injected by gameplay.js) ── -->
+  <div id="card-overlay"></div>
+
+  <!-- Scripts — load order is critical:
+       1. cards.js    → card data arrays (ACTIVITY_CARDS etc.)
+       2. map.js      → board state (SPACES, positions, scores etc.)
+       3. gameplay.js → uses functions & data from both above files
+  -->
+  <script src="js/cards.js"></script>
   <script src="js/map.js"></script>
+  <script src="js/gameplay.js"></script>
+
 </body>
 </html>

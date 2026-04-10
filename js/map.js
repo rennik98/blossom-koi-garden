@@ -1,6 +1,6 @@
 /* ============================================================
-   MAP.JS — Full Game Board Logic
-   Board: 1920 × 1080px base (Figma)
+   MAP.JS — Board rendering, dice rolling, token movement
+   Calls gameplay.js for card logic after landing
 ============================================================ */
 
 // ── Space type → image file ──
@@ -14,18 +14,16 @@ const SPACE_IMAGES = {
   normal:   'assets/images/map_game/normal_space.png',
 };
 
-// ── Player token images ──
+// ── Player assets & names ──
 const PLAYER_TOKENS = [
   'assets/images/map_game/player1.png',
   'assets/images/map_game/player2.png',
   'assets/images/map_game/player3.png',
   'assets/images/map_game/player4.png',
 ];
-
-// ── Player names ──
 const PLAYER_NAMES = ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
 
-// ── Token offsets so players don't overlap on same space ──
+// ── Token offsets (so players don't stack on same space) ──
 const TOKEN_OFFSETS = [
   { dx: -2.5, dy: -2.0 },
   { dx:  2.5, dy: -2.0 },
@@ -33,7 +31,7 @@ const TOKEN_OFFSETS = [
   { dx:  2.5, dy:  2.0 },
 ];
 
-// ── SPACES — exact coordinates from Figma console extractor ──
+// ── SPACES — exact coordinates from Figma ──
 const SPACES = [
   { type: 'start',    x:  10.00, y: 31.11 },  // #0
   { type: 'normal',   x:  18.02, y: 30.37 },  // #1
@@ -78,11 +76,13 @@ const SPACES = [
 ];
 
 // ── Game state ──
-const playerCount = parseInt(sessionStorage.getItem('playerCount')) || 2;
-const positions   = Array(playerCount).fill(0);
-const scores      = Array(playerCount).fill(0);
-let   currentTurn = 0;
-let   isRolling   = false;
+const playerCount    = parseInt(sessionStorage.getItem('playerCount')) || 2;
+const positions      = Array(playerCount).fill(0);
+const scores         = Array(playerCount).fill(0);
+const frozenPlayers  = Array(playerCount).fill(false);
+let   currentTurn    = 0;
+let   turnDirection  = 1;   // 1 = clockwise, -1 = counter-clockwise (Reverse! card)
+let   isRolling      = false;
 
 // ── Init ──
 window.addEventListener('DOMContentLoaded', () => {
@@ -96,14 +96,12 @@ window.addEventListener('DOMContentLoaded', () => {
 function renderSpaces() {
   const container = document.getElementById('spaces-container');
   container.innerHTML = '';
-
   SPACES.forEach((space) => {
     const el = document.createElement('div');
     el.className = 'space' +
       (space.type === 'start' || space.type === 'end' ? ' space-large' : '');
     el.style.left = space.x + '%';
     el.style.top  = space.y + '%';
-
     const img = document.createElement('img');
     img.src = SPACE_IMAGES[space.type];
     img.alt = space.type;
@@ -116,35 +114,29 @@ function renderSpaces() {
 function renderTokens() {
   const container = document.getElementById('tokens-container');
   container.innerHTML = '';
-
   for (let i = 0; i < playerCount; i++) {
     const token = document.createElement('div');
     token.id        = `token-${i}`;
     token.className = 'player-token';
-
     const img = document.createElement('img');
     img.src = PLAYER_TOKENS[i];
     img.alt = PLAYER_NAMES[i];
     token.appendChild(img);
-
     placeToken(token, 0, i);
     container.appendChild(token);
   }
 }
 
-// ── Render score bar (top right) ──
+// ── Render score bar ──
 function renderScoreBar() {
   const bar = document.getElementById('score-bar');
   bar.innerHTML = '';
-
   for (let i = 0; i < playerCount; i++) {
     const chip = document.createElement('div');
+    chip.id        = `score-chip-${i}`;
     chip.className = 'score-chip' + (i === 0 ? ' active-turn' : '');
-    chip.id = `score-chip-${i}`;
     chip.innerHTML = `
-      <img class="token-thumb"
-           src="${PLAYER_TOKENS[i]}"
-           alt="${PLAYER_NAMES[i]}" />
+      <img class="token-thumb" src="${PLAYER_TOKENS[i]}" alt="${PLAYER_NAMES[i]}" />
       <div class="chip-info">
         <span class="chip-name">${PLAYER_NAMES[i]}</span>
         <span class="chip-score" id="score-val-${i}">0 pts</span>
@@ -154,7 +146,7 @@ function renderScoreBar() {
   }
 }
 
-// ── Place token at a space with offset per player ──
+// ── Place token at space with per-player offset ──
 function placeToken(token, spaceIndex, playerIndex) {
   const space = SPACES[spaceIndex];
   const off   = TOKEN_OFFSETS[playerIndex] || { dx: 0, dy: 0 };
@@ -166,9 +158,9 @@ function placeToken(token, spaceIndex, playerIndex) {
 function updateTurnLabel() {
   document.getElementById('current-player-label').textContent =
     PLAYER_NAMES[currentTurn].toUpperCase();
-
   document.querySelectorAll('.score-chip').forEach((chip, i) => {
     chip.classList.toggle('active-turn', i === currentTurn);
+    chip.classList.toggle('frozen', frozenPlayers[i]);
   });
 }
 
@@ -182,13 +174,11 @@ function updateScore(playerIndex) {
 function rollDice() {
   if (isRolling) return;
   isRolling = true;
-
   const rollBtn  = document.getElementById('roll-btn');
   const diceFace = document.getElementById('dice-face');
   rollBtn.disabled = true;
   diceFace.classList.add('rolling');
 
-  // Animate through random faces
   let ticks = 0;
   const interval = setInterval(() => {
     const rand = Math.ceil(Math.random() * 6);
@@ -226,23 +216,61 @@ function onLand(playerIndex, spaceIndex) {
   const space = SPACES[spaceIndex];
   console.log(`${PLAYER_NAMES[playerIndex]} landed on: ${space.type} (#${spaceIndex})`);
 
-  // Score based on space type
-  switch (space.type) {
-    case 'reward':   scores[playerIndex] += 2; updateScore(playerIndex); break;
-    case 'punish':   scores[playerIndex] -= 1; updateScore(playerIndex); break;
-    case 'minigame': scores[playerIndex] += 1; updateScore(playerIndex); break;
-    case 'end':
-      setTimeout(() => alert(`🏆 ${PLAYER_NAMES[playerIndex]} wins!`), 400);
-      return;
+  if (space.type === 'end') {
+    showGameEnd(playerIndex);
+    return;
   }
 
-  // TODO: trigger card draw / event popup based on space.type
+  // Show card popup (defined in gameplay.js)
+  showCardPopup(space.type, playerIndex);
+}
 
-  // Next player's turn
-  setTimeout(() => {
-    currentTurn = (currentTurn + 1) % playerCount;
-    updateTurnLabel();
-    document.getElementById('roll-btn').disabled = false;
-    isRolling = false;
-  }, 600);
+// ── Called by gameplay.js after card is resolved ──
+function endTurn() {
+  // Advance to next player (respects direction and frozen state)
+  let next = currentTurn;
+  let tries = 0;
+  do {
+    next = ((next + turnDirection) % playerCount + playerCount) % playerCount;
+    tries++;
+    if (tries > playerCount) break;  // safety — all frozen edge case
+  } while (frozenPlayers[next] && tries <= playerCount);
+
+  // Unfreeze previous frozen player after their skipped turn
+  if (frozenPlayers[currentTurn]) {
+    frozenPlayers[currentTurn] = false;
+  }
+
+  currentTurn = next;
+  updateTurnLabel();
+  document.getElementById('roll-btn').disabled = false;
+  isRolling = false;
+}
+
+// ── Game end screen ──
+function showGameEnd(winnerIndex) {
+  const sorted = PLAYER_NAMES.slice(0, playerCount)
+    .map((name, i) => ({ name, score: scores[i] }))
+    .sort((a, b) => b.score - a.score);
+
+  const overlay = document.getElementById('card-overlay');
+  overlay.innerHTML = `
+    <div class="card-popup" style="background: linear-gradient(135deg, #fff9c4, #f5d742); text-align:center; align-items:center;">
+      <div style="font-size:clamp(40px,6vw,72px)">🏆</div>
+      <div class="card-title-en" style="color:#5d3a00">Game Over!</div>
+      <div class="card-h2h-label">🎉 Winner: ${PLAYER_NAMES[winnerIndex]}</div>
+      <div style="width:100%; background:rgba(255,255,255,0.4); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:8px;">
+        ${sorted.map((p, i) => `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:rgba(255,255,255,0.4); border-radius:8px;">
+            <span style="font-weight:700; color:#5d3a00">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`} ${p.name}</span>
+            <span style="font-family:Georgia,serif; font-size:1.2em; font-weight:800; color:#c07800">${p.score} pts</span>
+          </div>
+        `).join('')}
+      </div>
+      <button class="card-btn card-btn-confirm" onclick="window.location.href='index.html'">
+        🏠 Back to Home
+      </button>
+    </div>
+  `;
+  overlay.classList.add('active');
 }
