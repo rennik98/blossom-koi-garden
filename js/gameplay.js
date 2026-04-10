@@ -133,49 +133,64 @@ function buildPopup(deck, card, playerIndex) {
     `;
   }
 
+  const illustNum = card.illus || 1;
+  const illustSrc = `assets/images/card/illustration_pic/${illustNum}.png`;
+
   overlay.innerHTML = `
     <div class="card-popup">
+
+      <!-- BG image fills entire card -->
       <img class="card-bg-img" src="${theme.bgImg}" alt="" />
 
-      <div class="card-content-panel">
+      <!-- Two-column layout: illustration left, content right -->
+      <div class="card-inner">
 
-        <!-- Top row: badge + points -->
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div class="card-badge" style="background:${theme.badge}; color:#fff">
-            ${theme.label}
-          </div>
-          ${ptsHTML}
+        <!-- LEFT: illustration -->
+        <div class="card-illus-wrap">
+          <img class="card-illus-img" src="${illustSrc}" alt="illustration" />
         </div>
 
-        <!-- Card title -->
-        <div class="card-title-en" style="color:${theme.text}">${card.title}</div>
-        ${card.titleTh ? `<div class="card-title-th" style="color:${theme.text}">${card.titleTh}</div>` : ''}
+        <!-- RIGHT: content panel -->
+        <div class="card-content-panel">
 
-        ${subtitle}
-
-        <!-- Instructions -->
-        <div class="card-instruction-en">${card.instruction || card.description || ''}</div>
-        ${card.instructionTh || card.descriptionTh
-          ? `<div class="card-instruction-th">${card.instructionTh || card.descriptionTh}</div>`
-          : ''}
-
-        <!-- Stats row (only for activity cards) -->
-        ${card.diff ? `
-          <div class="card-stats">
-            <div class="stat-cell"><div class="stat-val">${card.time}s</div><div class="stat-lbl">TIME</div></div>
-            <div class="stat-cell"><div class="stat-val">${card.points} pt${card.points !== 1 ? 's' : ''}</div><div class="stat-lbl">POINTS</div></div>
-            <div class="stat-cell"><div class="stat-val">${card.diff}</div><div class="stat-lbl">DIFF</div></div>
-            <div class="stat-cell"><div class="stat-val">${card.scoring}</div><div class="stat-lbl">SCORE</div></div>
+          <!-- Top row: badge + points -->
+          <div class="card-top-row">
+            <div class="card-badge" style="background:${theme.badge}; color:#fff">
+              ${theme.label}
+            </div>
+            ${ptsHTML}
           </div>
-        ` : ''}
 
-        <!-- Timer + Actions row -->
-        <div style="display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
-          ${timerHTML}
-          <div class="card-actions">${actionsHTML}</div>
-        </div>
+          <!-- Card title -->
+          <div class="card-title-en" style="color:${theme.text}">${card.title}</div>
+          ${card.titleTh ? `<div class="card-title-th" style="color:${theme.text}">${card.titleTh}</div>` : ''}
 
-      </div><!-- end card-content-panel -->
+          ${subtitle}
+
+          <!-- Instructions -->
+          <div class="card-instruction-en">${card.instruction || card.description || ''}</div>
+          ${card.instructionTh || card.descriptionTh
+            ? `<div class="card-instruction-th">${card.instructionTh || card.descriptionTh}</div>`
+            : ''}
+
+          <!-- Stats row (only for activity cards) -->
+          ${card.diff ? `
+            <div class="card-stats">
+              <div class="stat-cell"><div class="stat-val">${card.time}s</div><div class="stat-lbl">TIME</div></div>
+              <div class="stat-cell"><div class="stat-val">${card.points} pt${card.points !== 1 ? 's' : ''}</div><div class="stat-lbl">POINTS</div></div>
+              <div class="stat-cell"><div class="stat-val">${card.diff}</div><div class="stat-lbl">DIFF</div></div>
+              <div class="stat-cell"><div class="stat-val">${card.scoring}</div><div class="stat-lbl">SCORE</div></div>
+            </div>
+          ` : ''}
+
+          <!-- Timer + Action buttons -->
+          <div class="card-bottom-row">
+            ${timerHTML}
+            <div class="card-actions">${actionsHTML}</div>
+          </div>
+
+        </div><!-- end card-content-panel -->
+      </div><!-- end card-inner -->
     </div>
   `;
 
@@ -286,7 +301,7 @@ function applyCardEffect() {
       }
       showToast(`🌋 Point Earthquake!`);
       break;
-    case 'steal':
+    case 'steal': {
       const leader = scores.indexOf(Math.max(...scores));
       if (leader !== currentTurn) {
         scores[leader]       -= 2;
@@ -296,17 +311,20 @@ function applyCardEffect() {
         showToast(`😈 Stole 2 pts from ${PLAYER_NAMES[leader]}!`);
       }
       break;
-    case 'doubleOrNothing':
+    }
+    case 'doubleOrNothing': {
       const flip = Math.random() < 0.5;
       scores[currentTurn] += flip ? 3 : -2;
       updateScore(currentTurn);
       showToast(flip ? `🍀 Heads! +3 pts!` : `💀 Tails! -2 pts!`);
       break;
-    case 'luckyMove':
+    }
+    case 'luckyMove': {
       const roll = Math.ceil(Math.random() * 6);
       movePlayerForward(currentTurn, roll);
       showToast(`🍀 Lucky! Move +${roll} spaces!`);
       break;
+    }
     case 'bonusRound':
       closeCardPopup();
       showMinigameForAll();

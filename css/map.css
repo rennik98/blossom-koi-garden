@@ -104,7 +104,7 @@ html, body {
   pointer-events: none;
 }
 .map-logo img {
-  width: clamp(180px, 350vw, 380px);
+  width: clamp(180px, 20vw, 380px);
   filter: drop-shadow(0 4px 16px rgba(0,0,0,0.45));
 }
 
@@ -169,10 +169,10 @@ html, body {
 ============================================================ */
 .dice-bar {
   position: absolute;
-  bottom: 0%;
+  bottom: 1.5%;
   left: 50%;
   transform: translateX(-50%);
-  width: clamp(300px, 60vw, 6600px);
+  width: clamp(300px, 38vw, 660px);
   z-index: 30;
 }
 
@@ -204,9 +204,6 @@ html, body {
   text-shadow: 0 1px 2px rgba(255,220,120,0.5);
   min-width: 80px;
   text-align: center;
-  position: relative;
-  left: 155px;  
-  top: -30px;
 }
 
 /* Roll Dice button */
@@ -216,14 +213,9 @@ html, body {
   cursor: pointer;
   padding: 0;
   transition: transform 0.15s ease, filter 0.15s ease;
-  position: relative;
-  margin-top: 45px;
-  margin-right: 25px;
 }
-
-
 .roll-btn img {
-  width: clamp(100px, 11vw, 210px);
+  width: clamp(100px, 13vw, 210px);
   filter: drop-shadow(0 3px 8px rgba(0,0,0,0.4));
 }
 .roll-btn:hover   { transform: scale(1.07); filter: brightness(1.1); }
@@ -239,10 +231,6 @@ html, body {
 .dice-face {
   width: clamp(34px, 4.5vw, 64px);
   filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
-  position: relative;
-  left: -55px;  /* ← nudge left */
-  top: 23px;
-  /* margin-right: 50px;  */
 }
 .dice-face.rolling {
   animation: spin 0.15s linear infinite;
