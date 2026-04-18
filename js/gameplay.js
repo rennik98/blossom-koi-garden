@@ -2,6 +2,42 @@
    GAMEPLAY.JS — Card popup logic & game flow
 ============================================================ */
 
+// ── Language helpers ──
+const CARD_UI = {
+  en: {
+    seconds: 'seconds', pts: 'pts', pt: 'pt',
+    applyEffect: '✅ Apply Effect',
+    draw: '🤝 Draw', wins: 'Wins!',
+    success: '✅ Success', fail: '❌ Fail', pass: '⏭ Pass',
+    allCompete: '🎮 ALL players compete!',
+    time: 'TIME', points: 'POINTS', diff: 'DIFF', score: 'SCORE',
+    labels: { body:'🏃 Body', brain:'🧠 Brain', social:'💬 Social', h2h:'⚔️ H2H',
+              reward:'🪷 Reward', punish:'👻 Punish', event:'❓ Event', minigame:'🎮 Mini-Game' },
+  },
+  th: {
+    seconds: 'วินาที', pts: 'แต้ม', pt: 'แต้ม',
+    applyEffect: '✅ รับผล',
+    draw: '🤝 เสมอ', wins: 'ชนะ!',
+    success: '✅ สำเร็จ', fail: '❌ ล้มเหลว', pass: '⏭ ข้าม',
+    allCompete: '🎮 ทุกคนแข่ง!',
+    time: 'เวลา', points: 'คะแนน', diff: 'ระดับ', score: 'การนับ',
+    labels: { body:'🏃 ร่างกาย', brain:'🧠 สมอง', social:'💬 สังคม', h2h:'⚔️ ดวล',
+              reward:'🪷 รางวัล', punish:'👻 โทษ', event:'❓ เหตุการณ์', minigame:'🎮 มินิเกม' },
+  },
+};
+function isLangTh() { return localStorage.getItem('cardLang') === 'th'; }
+function ui(key)     { return (isLangTh() ? CARD_UI.th : CARD_UI.en)[key]; }
+function uiLabel(cat){ return (isLangTh() ? CARD_UI.th : CARD_UI.en).labels[cat] || cat; }
+
+function cardText(card, field) {
+  const th = isLangTh();
+  if (field === 'title')       return (th && card.titleTh)       ? card.titleTh       : (card.title || '');
+  if (field === 'instruction') return (th && (card.instructionTh || card.descriptionTh))
+                                  ? (card.instructionTh || card.descriptionTh)
+                                  : (card.instruction || card.description || '');
+  return '';
+}
+
 // ── Category themes — card_bg_1 to card_bg_4 ──
 // card_bg_1 = body (koi/teal),  card_bg_2 = brain (cherry blossom)
 // card_bg_3 = social (green),   card_bg_4 = h2h/special (blue)
@@ -79,7 +115,7 @@ function buildPopup(deck, card, playerIndex) {
     </div>`;
   }
   if (isMinigame) {
-    subtitle = `<div class="card-h2h-label">🎮 ALL players compete!</div>`;
+    subtitle = `<div class="card-h2h-label">${ui('allCompete')}</div>`;
   }
 
   // Timer section
@@ -94,41 +130,41 @@ function buildPopup(deck, card, playerIndex) {
         </svg>
         <div class="card-timer-num" id="timer-num">${card.time}</div>
       </div>
-      <div class="card-timer-label">seconds</div>
+      <div class="card-timer-label">${ui('seconds')}</div>
     </div>
   ` : '';
 
   // Points badge
   const pts = card.points || 0;
-  const ptsHTML = pts ? `<div class="card-points-badge">+${pts} pts</div>` : '';
+  const ptsHTML = pts ? `<div class="card-points-badge">+${pts} ${ui('pts')}</div>` : '';
 
   // Action buttons
   let actionsHTML = '';
   if (isEvent || isReward || isPunish) {
     // No success/fail — just apply effect
     actionsHTML = `<button class="card-btn card-btn-confirm" onclick="applyCardEffect()">
-      ✅ Apply Effect
+      ${ui('applyEffect')}
     </button>`;
   } else if (isH2H) {
     actionsHTML = `
       <button class="card-btn card-btn-success" onclick="cardSuccess(${playerIndex})">
-        🏆 ${PLAYER_NAMES[playerIndex]} Wins!
+        🏆 ${PLAYER_NAMES[playerIndex]} ${ui('wins')}
       </button>
       <button class="card-btn card-btn-fail" onclick="cardSuccess(${h2hChallenger >= 0 ? h2hChallenger : playerIndex})">
-        🏆 ${h2hChallenger >= 0 ? PLAYER_NAMES[h2hChallenger] : 'Opponent'} Wins!
+        🏆 ${h2hChallenger >= 0 ? PLAYER_NAMES[h2hChallenger] : 'Opponent'} ${ui('wins')}
       </button>
-      <button class="card-btn card-btn-pass" onclick="cardDraw()">🤝 Draw</button>
+      <button class="card-btn card-btn-pass" onclick="cardDraw()">${ui('draw')}</button>
     `;
   } else {
     actionsHTML = `
       <button class="card-btn card-btn-success" onclick="cardSuccess(${playerIndex})">
-        ✅ Success
+        ${ui('success')}
       </button>
       <button class="card-btn card-btn-fail" onclick="cardFail()">
-        ❌ Fail
+        ${ui('fail')}
       </button>
       <button class="card-btn card-btn-pass" onclick="cardFail()">
-        ⏭ Pass
+        ${ui('pass')}
       </button>
     `;
   }
@@ -156,30 +192,26 @@ function buildPopup(deck, card, playerIndex) {
           <!-- Top row: badge + points -->
           <div class="card-top-row">
             <div class="card-badge" style="background:${theme.badge}; color:#fff">
-              ${theme.label}
+              ${uiLabel(card.category || deck)}
             </div>
             ${ptsHTML}
           </div>
 
           <!-- Card title -->
-          <div class="card-title-en" style="color:${theme.text}">${card.title}</div>
-          ${card.titleTh ? `<div class="card-title-th" style="color:${theme.text}">${card.titleTh}</div>` : ''}
+          <div class="card-title-en" style="color:${theme.text}">${cardText(card, 'title')}</div>
 
           ${subtitle}
 
           <!-- Instructions -->
-          <div class="card-instruction-en">${card.instruction || card.description || ''}</div>
-          ${card.instructionTh || card.descriptionTh
-            ? `<div class="card-instruction-th">${card.instructionTh || card.descriptionTh}</div>`
-            : ''}
+          <div class="card-instruction-en">${cardText(card, 'instruction')}</div>
 
           <!-- Stats row (only for activity cards) -->
           ${card.diff ? `
             <div class="card-stats">
-              <div class="stat-cell"><div class="stat-val">${card.time}s</div><div class="stat-lbl">TIME</div></div>
-              <div class="stat-cell"><div class="stat-val">${card.points} pt${card.points !== 1 ? 's' : ''}</div><div class="stat-lbl">POINTS</div></div>
-              <div class="stat-cell"><div class="stat-val">${card.diff}</div><div class="stat-lbl">DIFF</div></div>
-              <div class="stat-cell"><div class="stat-val">${card.scoring}</div><div class="stat-lbl">SCORE</div></div>
+              <div class="stat-cell"><div class="stat-val">${card.time}s</div><div class="stat-lbl">${ui('time')}</div></div>
+              <div class="stat-cell"><div class="stat-val">${card.points} ${card.points !== 1 ? ui('pts') : ui('pt')}</div><div class="stat-lbl">${ui('points')}</div></div>
+              <div class="stat-cell"><div class="stat-val">${card.diff}</div><div class="stat-lbl">${ui('diff')}</div></div>
+              <div class="stat-cell"><div class="stat-val">${card.scoring}</div><div class="stat-lbl">${ui('score')}</div></div>
             </div>
           ` : ''}
 

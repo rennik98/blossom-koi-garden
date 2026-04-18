@@ -209,6 +209,98 @@ body {
 .back-btn:active { transform: scale(0.96); }
 
 /* ============================================================
+   SETTINGS MODAL
+============================================================ */
+.settings-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+.settings-overlay.active {
+  display: flex;
+}
+
+.settings-panel {
+  background: rgba(255, 248, 228, 0.97);
+  border: 2px solid rgba(180, 120, 40, 0.5);
+  border-radius: 20px;
+  padding: 36px 44px;
+  min-width: 320px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.settings-title {
+  font-family: Georgia, serif;
+  font-size: 1.5rem;
+  color: #5d3a00;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.settings-label {
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #5d3a00;
+}
+
+.lang-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.lang-btn {
+  padding: 8px 22px;
+  border: 2px solid rgba(180, 120, 40, 0.5);
+  border-radius: 999px;
+  background: transparent;
+  font-family: Georgia, serif;
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #5d3a00;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.lang-btn.active {
+  background: #c07800;
+  border-color: #c07800;
+  color: #fff;
+}
+.lang-btn:hover:not(.active) {
+  background: rgba(192, 120, 0, 0.15);
+}
+
+.settings-close-btn {
+  padding: 10px 36px;
+  border: none;
+  border-radius: 999px;
+  background: #c07800;
+  color: #fff;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.settings-close-btn:hover { filter: brightness(1.1); }
+
+/* ============================================================
    ANIMATIONS
 ============================================================ */
 @keyframes petalFall {

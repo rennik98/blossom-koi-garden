@@ -12,7 +12,24 @@ function showScreen(id) {
 }
 
 // ── Home screen ──
-function openSettings()     { console.log('Settings'); }
+function openSettings() {
+  updateLangButtons();
+  document.getElementById('settings-modal').classList.add('active');
+}
+function closeSettings(e) {
+  if (e && e.target !== document.getElementById('settings-modal')) return;
+  document.getElementById('settings-modal').classList.remove('active');
+}
+function setCardLang(lang) {
+  localStorage.setItem('cardLang', lang);
+  updateLangButtons();
+}
+function updateLangButtons() {
+  const lang = localStorage.getItem('cardLang') || 'en';
+  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+  document.getElementById('lang-th').classList.toggle('active', lang === 'th');
+}
+
 function openAchievements() { console.log('Achievements'); }
 function showCards()        { console.log('Cards'); }
 

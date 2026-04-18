@@ -12,6 +12,14 @@
 
   <div class="game-root">
 
+    <!-- ── FALLING PETALS ── -->
+    <div class="petals">
+      <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+      <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+      <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+      <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+    </div>
+
     <!-- ── BOARD ── -->
     <div class="board-wrap">
       <img class="board-img" src="assets/images/map_game/background_game.png" alt="Game Board" />
@@ -24,6 +32,12 @@
       <img src="assets/images/home/logo.png" alt="Blossom & Koi Garden" />
     </div>
 
+    <!-- ── LANG TOGGLE ── -->
+    <div class="map-lang-toggle">
+      <button id="map-lang-en" class="map-lang-btn" onclick="mapSetLang('en')">EN</button>
+      <button id="map-lang-th" class="map-lang-btn" onclick="mapSetLang('th')">TH</button>
+    </div>
+
     <!-- ── SCORE BAR ── -->
     <div class="score-bar" id="score-bar"></div>
 
@@ -32,11 +46,13 @@
       <img class="dice-bar-bg" src="assets/images/map_game/rolldice_bar.png" alt="" />
       <div class="dice-bar-content">
         <span class="player-label" id="current-player-label">PLAYER 1</span>
+        <div class="dice-face-wrap">
+          <img class="dice-face" id="dice-face"
+               src="assets/images/map_game/1dice.png" alt="Dice" />
+        </div>
         <button class="roll-btn" id="roll-btn" onclick="rollDice()">
           <img src="assets/images/map_game/rolldice_button.png" alt="Roll Dice" />
         </button>
-        <img class="dice-face" id="dice-face"
-             src="assets/images/map_game/1dice.png" alt="Dice" />
       </div>
     </div>
 

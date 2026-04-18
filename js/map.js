@@ -3,6 +3,22 @@
    Calls gameplay.js for card logic after landing
 ============================================================ */
 
+// ── Language toggle ──
+function ptsLabel() {
+  return localStorage.getItem('cardLang') === 'th' ? 'แต้ม' : 'pts';
+}
+function mapSetLang(lang) {
+  localStorage.setItem('cardLang', lang);
+  document.getElementById('map-lang-en').classList.toggle('active', lang === 'en');
+  document.getElementById('map-lang-th').classList.toggle('active', lang === 'th');
+  // Refresh all score displays
+  for (let i = 0; i < playerCount; i++) updateScore(i);
+}
+function mapInitLang() {
+  const lang = localStorage.getItem('cardLang') || 'en';
+  mapSetLang(lang);
+}
+
 // ── Space type → image file ──
 const SPACE_IMAGES = {
   start:    'assets/images/map_game/start_space.png',
@@ -86,6 +102,7 @@ let   isRolling      = false;
 
 // ── Init ──
 window.addEventListener('DOMContentLoaded', () => {
+  mapInitLang();
   renderSpaces();
   renderTokens();
   renderScoreBar();
@@ -130,7 +147,11 @@ function renderTokens() {
 // ── Render score bar ──
 function renderScoreBar() {
   const bar = document.getElementById('score-bar');
-  bar.innerHTML = '';
+  bar.className = `score-bar players-${playerCount}`;
+  bar.innerHTML = '<div class="score-bar-side" id="score-left"></div><div class="score-bar-side" id="score-right"></div>';
+
+  const leftCount = playerCount === 2 ? 1 : 2;
+
   for (let i = 0; i < playerCount; i++) {
     const chip = document.createElement('div');
     chip.id        = `score-chip-${i}`;
@@ -139,10 +160,10 @@ function renderScoreBar() {
       <img class="token-thumb" src="${PLAYER_TOKENS[i]}" alt="${PLAYER_NAMES[i]}" />
       <div class="chip-info">
         <span class="chip-name">${PLAYER_NAMES[i]}</span>
-        <span class="chip-score" id="score-val-${i}">0 pts</span>
+        <span class="chip-score" id="score-val-${i}">0 ${ptsLabel()}</span>
       </div>
     `;
-    bar.appendChild(chip);
+    document.getElementById(i < leftCount ? 'score-left' : 'score-right').appendChild(chip);
   }
 }
 
@@ -167,7 +188,7 @@ function updateTurnLabel() {
 // ── Update a player's score display ──
 function updateScore(playerIndex) {
   const el = document.getElementById(`score-val-${playerIndex}`);
-  if (el) el.textContent = scores[playerIndex] + ' pts';
+  if (el) el.textContent = scores[playerIndex] + ' ' + ptsLabel();
 }
 
 // ── Roll dice ──

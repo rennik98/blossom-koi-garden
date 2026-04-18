@@ -77,6 +77,23 @@
     </div>
   </div>
 
+  <!-- ── SETTINGS MODAL ── -->
+  <div id="settings-modal" class="settings-overlay" onclick="closeSettings(event)">
+    <div class="settings-panel">
+      <h2 class="settings-title">Settings</h2>
+
+      <div class="settings-row">
+        <span class="settings-label">Card Language</span>
+        <div class="lang-toggle">
+          <button id="lang-en" class="lang-btn" onclick="setCardLang('en')">EN</button>
+          <button id="lang-th" class="lang-btn" onclick="setCardLang('th')">TH</button>
+        </div>
+      </div>
+
+      <button class="settings-close-btn" onclick="closeSettings()">Close</button>
+    </div>
+  </div>
+
   <script src="js/home.js"></script>
 </body>
 </html>
