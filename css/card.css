@@ -71,10 +71,10 @@
   background: rgba(255, 255, 255, 0.22);
   backdrop-filter: blur(10px);
   border-radius: 0 28px 28px 0;
-  padding: clamp(14px, 2vw, 24px);
+  padding: clamp(12px, 1.6vw, 20px);
   display: flex;
   flex-direction: column;
-  gap: clamp(6px, 1vw, 12px);
+  gap: clamp(5px, 0.7vw, 9px);
   overflow-y: auto;
 }
 
@@ -122,9 +122,9 @@
 /* ── Titles ── */
 .card-title-en {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(22px, 3.5vw, 40px);
+  font-size: clamp(18px, 2.6vw, 32px);
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.15;
 }
 .card-title-th {
   font-size: clamp(14px, 1.8vw, 20px);
@@ -147,22 +147,35 @@
 
 /* ── Instructions ── */
 .card-instruction-en {
-  font-size: clamp(13px, 1.5vw, 18px);
-  line-height: 1.55;
-  color: rgba(0,0,0,0.8);
+  font-size: clamp(15px, 1.9vw, 23px);
+  line-height: 1.62;
+  color: rgba(0,0,0,0.82);
   font-weight: 500;
+  flex: 1;          /* fill available vertical space */
 }
 .card-instruction-th {
-  font-size: clamp(11px, 1.2vw, 15px);
-  line-height: 1.55;
-  color: rgba(0,0,0,0.6);
+  font-size: clamp(13px, 1.5vw, 18px);
+  line-height: 1.62;
+  color: rgba(0,0,0,0.7);
   font-family: 'Noto Sans Thai', sans-serif;
+  flex: 1;
+}
+
+/* ── Manual-picked value highlight ── */
+.manual-val {
+  display: inline-block;
+  background: rgba(255,255,255,0.55);
+  border-radius: 8px;
+  padding: 1px 9px;
+  font-weight: 900;
+  font-size: 1.1em;
+  letter-spacing: 0.2px;
 }
 
 /* ── Stats row ── */
 .card-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   background: rgba(255,255,255,0.2);
   border-radius: 14px;
@@ -182,44 +195,35 @@
   color: rgba(0,0,0,0.5);
 }
 
-/* ── Timer ── */
-.card-timer-wrap {
+/* ── Stopwatch ── */
+.card-stopwatch-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  align-self: center;
+  gap: 8px;
+  width: 100%;
 }
-.card-timer-ring {
-  position: relative;
-  width:  72px;
-  height: 72px;
-}
-.card-timer-ring svg { transform: rotate(-90deg); }
-.timer-bg-circle   { fill: none; stroke: rgba(0,0,0,0.12); stroke-width: 5; }
-.timer-prog-circle {
-  fill: none;
-  stroke: rgba(0,0,0,0.5);
-  stroke-width: 5;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 1s linear, stroke 0.3s;
-}
-.card-timer-num {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.sw-display {
   font-family: Georgia, serif;
-  font-size: 22px;
+  font-size: clamp(28px, 3.6vw, 46px);
   font-weight: 800;
-  color: rgba(0,0,0,0.7);
+  color: rgba(0,0,0,0.60);
+  letter-spacing: 2px;
+  transition: color 0.3s;
 }
-.card-timer-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: rgba(0,0,0,0.45);
+.sw-display.sw-ticking { color: #c62828; }
+.sw-btn {
+  background: rgba(0,0,0,0.10);
+  color: rgba(0,0,0,0.70);
+  border: 2px solid rgba(0,0,0,0.18);
+  min-width: 160px;
+  font-size: clamp(14px, 1.5vw, 17px);
+}
+.sw-btn.sw-running {
+  background: #c62828;
+  color: #fff;
+  border-color: #c62828;
+  box-shadow: 0 4px 14px rgba(198,40,40,0.35);
 }
 
 /* ── Action buttons ── */
@@ -284,4 +288,85 @@
   opacity: 0.5;
   border-color: #90caf9;
   box-shadow: 0 0 10px rgba(144,202,249,0.5);
+}
+
+/* ── Vote panel (replaces card popup when voting) ── */
+.vote-panel {
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(20px);
+  border-radius: 28px;
+  width: clamp(340px, 48vw, 580px);
+  padding: clamp(28px, 4vw, 44px) clamp(28px, 4vw, 48px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.52);
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  border-top: 6px solid var(--accent, #4caf50);
+}
+.vote-header { text-align: center; }
+.vote-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(22px, 3vw, 34px);
+  font-weight: 800;
+  color: #1a1a1a;
+}
+.vote-question {
+  font-size: clamp(13px, 1.6vw, 18px);
+  color: #555;
+  margin-top: 6px;
+  font-weight: 500;
+}
+.vote-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.vote-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-radius: 16px;
+  background: rgba(0,0,0,0.04);
+  border: 2px solid rgba(0,0,0,0.07);
+  gap: 12px;
+}
+.vote-row.voted {
+  opacity: 0.6;
+  background: rgba(0,0,0,0.02);
+}
+.voter-name {
+  font-size: clamp(14px, 1.6vw, 18px);
+  font-weight: 700;
+  color: #222;
+  flex-shrink: 0;
+}
+.vote-btns {
+  display: flex;
+  gap: 10px;
+}
+.vote-btn {
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: clamp(13px, 1.3vw, 15px);
+  font-weight: 700;
+  font-family: Georgia, sans-serif;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.vote-btn:hover  { transform: scale(1.07); filter: brightness(1.08); }
+.vote-btn:active { transform: scale(0.95); }
+.vote-btn-pass { background: #2e7d32; color: #fff; box-shadow: 0 4px 14px rgba(46,125,50,0.35); }
+.vote-btn-fail { background: #c62828; color: #fff; box-shadow: 0 4px 14px rgba(198,40,40,0.35); }
+.vote-cast {
+  font-size: clamp(22px, 2.8vw, 32px);
+  flex-shrink: 0;
+}
+.vote-footer {
+  text-align: center;
+  font-size: clamp(12px, 1.2vw, 14px);
+  color: #999;
+  font-style: italic;
 }

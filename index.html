@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Blossom & Koi Garden</title>
   <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/card.css" />
 </head>
 <body>
 
@@ -77,6 +78,24 @@
     </div>
   </div>
 
+  <!-- ════════════════════════════
+       CARD LIST OVERLAY
+  ════════════════════════════ -->
+  <div id="cards-list-overlay" class="cls-overlay">
+    <div class="cls-panel">
+
+      <div class="cls-header">
+        <h2 class="cls-title" id="cls-title">Card List</h2>
+        <button class="cls-close" onclick="closeCards()">✕</button>
+      </div>
+
+      <div class="cls-tabs" id="cls-tabs"></div>
+
+      <div class="cls-grid" id="cls-grid"></div>
+
+    </div>
+  </div>
+
   <!-- ── SETTINGS MODAL ── -->
   <div id="settings-modal" class="settings-overlay" onclick="closeSettings(event)">
     <div class="settings-panel">
@@ -94,6 +113,7 @@
     </div>
   </div>
 
+  <script src="js/cards.js"></script>
   <script src="js/home.js"></script>
 </body>
 </html>
