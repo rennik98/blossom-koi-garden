@@ -2,15 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=1024, initial-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Blossom & Koi Garden</title>
   <link rel="stylesheet" href="css/home.css" />
   <link rel="stylesheet" href="css/card.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Preloader — inlined so it's ready before external CSS ── */
+    #preloader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #f5c8a0;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      opacity: 1;
+      transition: opacity 0.65s ease;
+    }
+    #preloader.pre-done { opacity: 0; pointer-events: none; }
+    .pre-logo {
+      width: clamp(220px, 34vw, 520px);
+      filter: drop-shadow(0 4px 20px rgba(0,0,0,0.35));
+      animation: preFloat 3s ease-in-out infinite;
+    }
+    .pre-bar-wrap {
+      margin-top: 36px;
+      width: clamp(220px, 34vw, 520px);
+      height: 10px;
+      background: rgba(93,58,0,0.15);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .pre-bar {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #f7e07a, #c07800);
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+    .pre-text {
+      margin-top: 14px;
+      font-family: Georgia, serif;
+      font-size: clamp(13px, 1.4vw, 17px);
+      font-weight: bold;
+      letter-spacing: 3px;
+      color: #5d3a00;
+    }
+    @keyframes preFloat {
+      0%, 100% { transform: translateY(0);    }
+      50%       { transform: translateY(-10px); }
+    }
+  </style>
 </head>
 <body>
 
+  <!-- ── PRELOADER ── -->
+  <div id="preloader">
+    <img class="pre-logo" src="assets/images/home/logo.png" alt="Blossom & Koi Garden" />
+    <div class="pre-bar-wrap"><div class="pre-bar" id="pre-bar"></div></div>
+    <p class="pre-text" id="pre-text">0%</p>
+  </div>
+  <script src="js/preload.js"></script>
+
   <!-- ── BACKGROUND ── -->
   <div class="bg"></div>
+
+  <!-- ── FULLSCREEN BUTTON ── -->
+  <button class="fullscreen-btn" id="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen">
+    <svg id="fs-expand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+      <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+    </svg>
+    <svg id="fs-compress" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+      <polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/>
+      <line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/>
+    </svg>
+  </button>
 
   <!-- ── FALLING PETALS ── -->
   <div class="petals">
@@ -29,9 +93,14 @@
       <img src="assets/images/home/logo.png" alt="Blossom & Koi Garden" />
     </div>
 
-    <button class="start-btn" onclick="openPlayerSelection()">
-      <img src="assets/images/home/start_button.png" alt="Start Game" />
-    </button>
+    <div class="home-action-row">
+      <button class="start-btn" onclick="openPlayerSelection()">
+        <img src="assets/images/home/start_button.png" alt="Start Game" />
+      </button>
+      <button class="continue-btn" id="continue-btn" onclick="continueGame()" style="display:none">
+        Load Game
+      </button>
+    </div>
 
     <div class="bottom-btns">
       <button class="icon-btn" title="Settings"     onclick="openSettings()">
@@ -115,5 +184,22 @@
 
   <script src="js/cards.js"></script>
   <script src="js/home.js"></script>
+  <script>
+    function toggleFullscreen() {
+      const el = document.documentElement;
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+      } else {
+        (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      }
+    }
+    function _updateFsIcon() {
+      const full = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      document.getElementById('fs-expand').style.display   = full ? 'none'  : 'block';
+      document.getElementById('fs-compress').style.display = full ? 'block' : 'none';
+    }
+    document.addEventListener('fullscreenchange',       _updateFsIcon);
+    document.addEventListener('webkitfullscreenchange', _updateFsIcon);
+  </script>
 </body>
 </html>

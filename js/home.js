@@ -4,6 +4,24 @@
 
 // ── State ──
 let selectedPlayers = 0;
+const SAVE_KEY = 'blossom_saved_game';
+
+// ── Show Continue button if a save exists ──
+window.addEventListener('DOMContentLoaded', () => {
+  updateLangButtons();
+  const saved = localStorage.getItem(SAVE_KEY);
+  if (saved) {
+    document.getElementById('continue-btn').style.display = 'block';
+  }
+});
+
+function continueGame() {
+  const raw   = localStorage.getItem(SAVE_KEY);
+  const saved = raw ? JSON.parse(raw) : null;
+  if (!saved) return;
+  sessionStorage.setItem('playerCount', saved.playerCount);
+  window.location.href = 'map.html';
+}
 
 // ── Screen helpers ──
 function showScreen(id) {
@@ -143,7 +161,7 @@ function confirmSelection() {
     alert('Please select a player count first.');
     return;
   }
-  // Save player count then go to the map page
+  localStorage.removeItem(SAVE_KEY); // discard any previous save on new game
   sessionStorage.setItem('playerCount', selectedPlayers);
   window.location.href = 'map.html';
 }

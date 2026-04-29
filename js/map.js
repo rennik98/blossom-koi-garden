@@ -100,12 +100,56 @@ let   currentTurn    = 0;
 let   turnDirection  = 1;   // 1 = clockwise, -1 = counter-clockwise (Reverse! card)
 let   isRolling      = false;
 
+// ── Persistence ──
+const SAVE_KEY = 'blossom_saved_game';
+
+function saveGame() {
+  localStorage.setItem(SAVE_KEY, JSON.stringify({
+    playerCount,
+    positions:     [...positions],
+    scores:        [...scores],
+    frozenPlayers: [...frozenPlayers],
+    currentTurn,
+    turnDirection,
+  }));
+}
+
+function clearSave() {
+  localStorage.removeItem(SAVE_KEY);
+}
+
+function goHome() {
+  saveGame();
+  window.location.href = 'index.html';
+}
+
 // ── Init ──
 window.addEventListener('DOMContentLoaded', () => {
+  // Restore saved game if player count matches
+  const raw   = localStorage.getItem(SAVE_KEY);
+  const saved = raw ? JSON.parse(raw) : null;
+  const isRestoring = saved && saved.playerCount === playerCount;
+
+  if (isRestoring) {
+    saved.positions.forEach((v, i)     => { if (i < playerCount) positions[i]     = v; });
+    saved.scores.forEach((v, i)        => { if (i < playerCount) scores[i]        = v; });
+    saved.frozenPlayers.forEach((v, i) => { if (i < playerCount) frozenPlayers[i] = v; });
+    currentTurn   = saved.currentTurn;
+    turnDirection = saved.turnDirection;
+  }
+
   mapInitLang();
   renderSpaces();
   renderTokens();
   renderScoreBar();
+
+  if (isRestoring) {
+    for (let i = 0; i < playerCount; i++) {
+      placeToken(document.getElementById(`token-${i}`), positions[i], i);
+      updateScore(i);
+    }
+  }
+
   updateTurnLabel();
 });
 
@@ -266,10 +310,12 @@ function endTurn() {
   updateTurnLabel();
   document.getElementById('roll-btn').disabled = false;
   isRolling = false;
+  saveGame();
 }
 
 // ── Game end screen ──
 function showGameEnd(winnerIndex) {
+  clearSave(); // game is over — no need to keep the save
   const sorted = PLAYER_NAMES.slice(0, playerCount)
     .map((name, i) => ({ name, score: scores[i] }))
     .sort((a, b) => b.score - a.score);

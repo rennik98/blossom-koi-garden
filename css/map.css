@@ -3,7 +3,11 @@
 ============================================================ */
 
 /* ── Reset ── */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
 
 html, body {
   width: 100%;
@@ -19,6 +23,7 @@ html, body {
   position: relative;
   width:  100vw;
   height: 100vh;
+  height: 100dvh; /* dynamic viewport — accounts for Safari iOS address bar */
   overflow: hidden;
 }
 
@@ -92,6 +97,30 @@ html, body {
 }
 
 /* ============================================================
+   FULLSCREEN BUTTON — top right
+============================================================ */
+.fullscreen-btn {
+  position: absolute;
+  top: 1.5%;
+  right: 1.5%;
+  z-index: 40;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 248, 228, 0.85);
+  border: 2px solid rgba(180, 120, 40, 0.5);
+  border-radius: 50%;
+  color: #5d3a00;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s, border-color 0.2s;
+}
+.fullscreen-btn:hover { background: rgba(192, 120, 0, 0.2); }
+.fullscreen-btn svg   { width: 16px; height: 16px; }
+
+/* ============================================================
    LANG TOGGLE — top left
 ============================================================ */
 .map-lang-toggle {
@@ -116,6 +145,8 @@ html, body {
   backdrop-filter: blur(4px);
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
+.map-home-btn { padding: 6px 12px; }
+
 .map-lang-btn.active {
   background: #c07800;
   border-color: #c07800;
@@ -182,7 +213,7 @@ html, body {
 ============================================================ */
 .score-bar {
   position: absolute;
-  bottom: calc(-7% + 8.4vw - 40px);
+  bottom: calc(-4% + 8.4vw - 40px);
   left: 0;
   right: 0;
   z-index: 31;
@@ -270,7 +301,7 @@ html, body {
 ============================================================ */
 .dice-bar {
   position: absolute;
-  bottom: -7%;
+  bottom: -4%;
   left: 50%;
   transform: translateX(-50%);
   width: clamp(300px, 30vw, 660px);
@@ -316,7 +347,7 @@ html, body {
 /* "PLAYER X" label */
 .player-label {
   position: absolute;
-  top: 67px;
+  top: clamp(28px, 4.6vw, 67px);
   left: 51%;
   transform: translateX(-50%);
   font-family: Georgia, serif;
@@ -333,7 +364,7 @@ html, body {
 .roll-btn {
   position: absolute;
   left: 51%;
-  top: calc(50% + 14px);
+  top: calc(50% + clamp(6px, 0.72vw, 14px));
   transform: translate(-50%, -50%);
   background: none;
   border: none;
@@ -361,8 +392,8 @@ html, body {
   justify-content: flex-end;
   align-items: center;
   position: relative;
-  top: 17px;
-  left: -28px;
+  top: clamp(8px, 0.9vw, 17px);
+  left: clamp(-28px, -1.5vw, -16px);
 }
 
 /* Dice face */
