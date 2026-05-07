@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Blossom & Koi Garden — Card Reference</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Screen layout ── */
+    body {
+      font-family: Georgia, serif;
+      background: #ede8dc;
+      padding: 24px;
+      color: #1a1a1a;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .page-header h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: #5d3a00;
+      letter-spacing: 1px;
+    }
+    .page-header p {
+      font-size: 13px;
+      color: #a07040;
+      margin-top: 6px;
+    }
+
+    /* ── Section heading ── */
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 28px 0 12px;
+      break-before: auto;
+    }
+    .section-heading h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff;
+      background: var(--sec-color, #555);
+      padding: 6px 20px;
+      border-radius: 999px;
+      letter-spacing: 0.5px;
+    }
+    .section-count {
+      font-size: 12px;
+      color: #888;
+    }
+
+    /* ── 2-column card grid ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* ── Individual PDF card ── */
+    .pdf-card {
+      position: relative;
+      height: 155px;
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.22);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .pdf-card-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 14px;
+    }
+
+    .pdf-card-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Illustration column */
+    .pdf-illus {
+      width: 38%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 8px 10px 10px;
+    }
+    .pdf-illus img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.18));
+    }
+    .pdf-illus-icon {
+      font-size: 52px;
+      line-height: 1;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+    }
+
+    /* Content column */
+    .pdf-content {
+      flex: 1;
+      background: rgba(255,255,255,0.26);
+      backdrop-filter: blur(8px);
+      border-radius: 0 14px 14px 0;
+      padding: 10px 12px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      overflow: hidden;
+    }
+
+    .pdf-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .pdf-badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      flex-shrink: 0;
+    }
+
+    .pdf-pts {
+      font-size: 9px;
+      font-weight: 800;
+      color: #fff;
+      background: rgba(0,0,0,0.22);
+      border: 1.5px solid rgba(255,255,255,0.45);
+      border-radius: 999px;
+      padding: 2px 8px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .pdf-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: #1a1a1a;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pdf-title-th {
+      font-family: 'Noto Sans Thai', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(0,0,0,0.55);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pdf-diff {
+      font-size: 9px;
+      color: rgba(0,0,0,0.45);
+      font-weight: 600;
+      letter-spacing: 0.4px;
+    }
+
+    .pdf-instruction {
+      font-size: 10.5px;
+      line-height: 1.45;
+      color: rgba(0,0,0,0.78);
+      font-weight: 500;
+      flex: 1;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+    .pdf-instruction strong { font-weight: 800; }
+
+    .pdf-instruction-th {
+      font-family: 'Noto Sans Thai', sans-serif;
+      font-size: 9.5px;
+      line-height: 1.4;
+      color: rgba(0,0,0,0.58);
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    /* Non-activity cards (no illustration) */
+    .pdf-card.no-illus .pdf-illus {
+      width: 22%;
+      padding: 10px 6px;
+    }
+
+    /* ── Print styles ── */
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .page-header { margin: 6mm 0 8mm; }
+      .page-header h1 { font-size: 22px; }
+      .section-heading { margin: 8mm 0 4mm; }
+      .card-grid { gap: 5mm; }
+      .pdf-card { height: 44mm; box-shadow: 0 1px 4px rgba(0,0,0,0.18); }
+      .pdf-title { font-size: 12px; }
+      .pdf-instruction { font-size: 9.5px; }
+      .pdf-instruction-th { font-size: 8.5px; }
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 14mm 14mm 14mm 14mm;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <h1>Blossom &amp; Koi Garden</h1>
+    <p>Card Reference — All Cards (EN + TH) &nbsp;·&nbsp; Open in browser → Ctrl+P → Save as PDF</p>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="js/cards.js"></script>
+  <script>
+    /* ── Theme config ── */
+    const THEMES = {
+      body:     { bg: 'assets/images/card/card_bg_1.png', badge: '#388e3c', label: '🏃 Body'      },
+      brain:    { bg: 'assets/images/card/card_bg_2.png', badge: '#c2185b', label: '🧠 Brain'     },
+      social:   { bg: 'assets/images/card/card_bg_3.png', badge: '#2e7d32', label: '💬 Social'    },
+      h2h:      { bg: 'assets/images/card/card_bg_4.png', badge: '#1565c0', label: '⚔️ H2H'       },
+      reward:   { bg: 'assets/images/card/card_bg_1.png', badge: '#f57f17', label: '⭐ Reward'    },
+      punish:   { bg: 'assets/images/card/card_bg_4.png', badge: '#c62828', label: '💀 Punish'    },
+      event:    { bg: 'assets/images/card/card_bg_3.png', badge: '#4527a0', label: '🎴 Event'     },
+      minigame: { bg: 'assets/images/card/card_bg_2.png', badge: '#e65100', label: '🎮 Minigame'  },
+    };
+
+    /* Strip HTML and replace {manual} with [random] */
+    function cleanText(str) {
+      return (str || '').replace(/<[^>]+>/g, '').replace(/\{manual\}/g, '[random 🎲]');
+    }
+
+    /* ── Build one activity card ── */
+    function activityCard(card) {
+      const theme = THEMES[card.category] || THEMES.body;
+      const illustSrc = `assets/images/card/illustration_pic/${card.illus}.png`;
+      const instr   = cleanText(card.instruction);
+      const instrTh = cleanText(card.instructionTh);
+      return `
+        <div class="pdf-card">
+          <img class="pdf-card-bg" src="${theme.bg}" alt="" />
+          <div class="pdf-card-inner">
+            <div class="pdf-illus">
+              <img src="${illustSrc}" alt="${card.title}" />
+            </div>
+            <div class="pdf-content">
+              <div class="pdf-top-row">
+                <span class="pdf-badge" style="background:${theme.badge}">${theme.label}</span>
+                ${card.points ? `<span class="pdf-pts">+${card.points} pts</span>` : ''}
+              </div>
+              <div class="pdf-title">${card.title}</div>
+              <div class="pdf-title-th">${card.titleTh || ''}</div>
+              <div class="pdf-diff">${card.diff || ''}</div>
+              <div class="pdf-instruction">${instr}</div>
+              <div class="pdf-instruction-th">${instrTh}</div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    /* ── Build one simple card (reward/punish/event/minigame) ── */
+    function simpleCard(card, category, icon) {
+      const theme = THEMES[category] || THEMES.event;
+      const desc   = cleanText(card.description);
+      const descTh = cleanText(card.descriptionTh);
+      const meta   = card.time ? `⏱ ${card.time}s` : (card.type || card.effect || '');
+      return `
+        <div class="pdf-card no-illus">
+          <img class="pdf-card-bg" src="${theme.bg}" alt="" />
+          <div class="pdf-card-inner">
+            <div class="pdf-illus" style="align-items:center;justify-content:center;">
+              <span class="pdf-illus-icon">${icon}</span>
+            </div>
+            <div class="pdf-content">
+              <div class="pdf-top-row">
+                <span class="pdf-badge" style="background:${theme.badge}">${theme.label}</span>
+                ${card.points ? `<span class="pdf-pts">+${card.points} pts</span>` : ''}
+              </div>
+              <div class="pdf-title">${card.title}</div>
+              <div class="pdf-title-th">${card.titleTh || ''}</div>
+              ${meta ? `<div class="pdf-diff">${meta}</div>` : ''}
+              <div class="pdf-instruction">${desc}</div>
+              <div class="pdf-instruction-th">${descTh}</div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    /* ── Build a section ── */
+    function section(title, color, cards) {
+      return `
+        <div class="section-heading" style="--sec-color:${color}">
+          <h2>${title}</h2>
+          <span class="section-count">${cards.length} cards</span>
+        </div>
+        <div class="card-grid">
+          ${cards.join('')}
+        </div>`;
+    }
+
+    /* ── Render ── */
+    const output = document.getElementById('output');
+
+    const byCategory = cat => ACTIVITY_CARDS.filter(c => c.category === cat).map(activityCard);
+
+    output.innerHTML = [
+      section('🏃 Body &amp; Movement', '#388e3c', byCategory('body')),
+      section('🧠 Brain Power',         '#c2185b', byCategory('brain')),
+      section('💬 Heart &amp; Soul',    '#2e7d32', byCategory('social')),
+      section('⚔️ Head-to-Head',        '#1565c0', byCategory('h2h')),
+      section('⭐ Reward Cards',        '#f57f17', REWARD_CARDS.map(c => simpleCard(c, 'reward', '⭐'))),
+      section('💀 Punish Cards',        '#c62828', PUNISH_CARDS.map(c => simpleCard(c, 'punish', '💀'))),
+      section('🎴 Event Cards',         '#4527a0', EVENT_CARDS.map(c => simpleCard(c, 'event', '🎴'))),
+      section('🎮 Minigame Cards',      '#e65100', MINIGAME_CARDS.map(c => simpleCard(c, 'minigame', '🎮'))),
+    ].join('');
+  </script>
+
+</body>
+</html>

@@ -11,6 +11,7 @@
     'assets/images/home/BGHome_1920x1080.png',
     'assets/images/home/logo.png',
     'assets/images/home/start_button.png',
+    'assets/images/home/loadgame.png',
     'assets/images/home/setting_button.png',
     'assets/images/home/achievement_button.png',
     'assets/images/home/showcard_button.png',

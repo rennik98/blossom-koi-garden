@@ -122,6 +122,7 @@ function showCardPopup(spaceType, playerIndex) {
   }
 
   buildPopup(deck, card, playerIndex);
+  SFX.cardFlip();
   document.getElementById('card-overlay').classList.add('active');
 }
 
@@ -477,6 +478,7 @@ function showMinigameForAll() {
 
 // ── Close popup ──
 function closeCardPopup() {
+  SFX.cardClose();
   clearInterval(swInterval);
   swInterval = null;
   swSeconds  = 0;

@@ -4,23 +4,69 @@
 
 // ── State ──
 let selectedPlayers = 0;
-const SAVE_KEY = 'blossom_saved_game';
+const SAVES_KEY = 'blossom_saves';
 
-// ── Show Continue button if a save exists ──
+function getSaves() {
+  try { return JSON.parse(localStorage.getItem(SAVES_KEY) || '[]'); } catch { return []; }
+}
+
+// ── Show Load Game button only if saves exist ──
 window.addEventListener('DOMContentLoaded', () => {
   updateLangButtons();
-  const saved = localStorage.getItem(SAVE_KEY);
-  if (saved) {
+  if (getSaves().length > 0) {
     document.getElementById('continue-btn').style.display = 'block';
   }
 });
 
-function continueGame() {
-  const raw   = localStorage.getItem(SAVE_KEY);
-  const saved = raw ? JSON.parse(raw) : null;
-  if (!saved) return;
-  sessionStorage.setItem('playerCount', saved.playerCount);
+// ── Load screen ──
+function renderLoadList() {
+  const saves = getSaves();
+  const list  = document.getElementById('load-save-list');
+
+  if (!saves.length) {
+    closeLoadScreen();
+    document.getElementById('continue-btn').style.display = 'none';
+    return;
+  }
+
+  list.innerHTML = saves.map(s => `
+    <div class="load-save-row">
+      <button class="load-save-item" onclick="loadSave('${s.id}')">
+        <span class="load-save-slot">Save ${s.slot}</span>
+        <span class="load-save-names">${(s.playerNames || []).join(' · ') || 'Players'}</span>
+        <span class="load-save-date">${s.savedAt || ''}</span>
+      </button>
+      <button class="load-save-delete" onclick="deleteSave('${s.id}')" title="Delete">🗑</button>
+    </div>
+  `).join('');
+}
+
+function openLoadScreen() {
+  if (!getSaves().length) return;
+  SFX.click();
+  renderLoadList();
+  document.getElementById('load-screen-modal').classList.add('active');
+}
+
+function closeLoadScreen() {
+  SFX.click();
+  document.getElementById('load-screen-modal').classList.remove('active');
+}
+
+function loadSave(id) {
+  const save = getSaves().find(s => s.id === id);
+  if (!save) return;
+  sessionStorage.setItem('playerCount', save.playerCount);
+  sessionStorage.setItem('playerNames', JSON.stringify(save.playerNames || []));
+  sessionStorage.setItem('currentSaveId', id);
   window.location.href = 'map.html';
+}
+
+function deleteSave(id) {
+  SFX.deleteSave();
+  const saves = getSaves().filter(s => s.id !== id);
+  localStorage.setItem(SAVES_KEY, JSON.stringify(saves));
+  renderLoadList();
 }
 
 // ── Screen helpers ──
@@ -30,8 +76,22 @@ function showScreen(id) {
 }
 
 // ── Home screen ──
+function updateSoundButton() {
+  const btn = document.getElementById('sound-toggle-btn');
+  if (!btn) return;
+  const on = BGM.isEnabled();
+  btn.textContent = on ? 'ON' : 'OFF';
+  btn.classList.toggle('active', on);
+}
+
+function toggleSound() {
+  BGM.toggle();
+  updateSoundButton();
+}
+
 function openSettings() {
   updateLangButtons();
+  updateSoundButton();
   document.getElementById('settings-modal').classList.add('active');
 }
 function closeSettings(e) {
@@ -141,27 +201,51 @@ function filterCardList(cat, btn) {
 }
 
 // ── Player selection ──
-function openPlayerSelection()  { showScreen('player-selection'); }
+function openPlayerSelection()  { SFX.click(); showScreen('player-selection'); }
 function closePlayerSelection() {
+  SFX.click();
   selectedPlayers = 0;
   document.querySelectorAll('.player-choice').forEach(btn => btn.classList.remove('selected'));
   showScreen('home-screen');
 }
 
+const DEFAULT_NAMES = ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
+
+const SETUP_TOKENS = [
+  'assets/images/map_game/player1.png',
+  'assets/images/map_game/player2.png',
+  'assets/images/map_game/player3.png',
+  'assets/images/map_game/player4.png',
+];
+
 function selectCount(num, btn) {
+  SFX.click();
   selectedPlayers = num;
-  // Highlight the chosen coin
   document.querySelectorAll('.player-choice').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
-  console.log('Selected players:', num);
+
+  const container = document.getElementById('name-inputs');
+  container.innerHTML = Array.from({ length: num }, (_, i) => `
+    <div class="name-input-wrap">
+      <img class="token-thumb" src="${SETUP_TOKENS[i]}" alt="Player ${i + 1}" />
+      <input class="name-input" id="name-p${i}" type="text"
+             placeholder="${DEFAULT_NAMES[i]}" maxlength="16" />
+    </div>`).join('');
+  container.style.display = 'flex';
 }
 
 function confirmSelection() {
+  SFX.click();
   if (selectedPlayers < 1) {
     alert('Please select a player count first.');
     return;
   }
-  localStorage.removeItem(SAVE_KEY); // discard any previous save on new game
+  const names = Array.from({ length: selectedPlayers }, (_, i) => {
+    const val = (document.getElementById(`name-p${i}`)?.value || '').trim();
+    return val || DEFAULT_NAMES[i];
+  });
+  sessionStorage.removeItem('currentSaveId');
   sessionStorage.setItem('playerCount', selectedPlayers);
+  sessionStorage.setItem('playerNames', JSON.stringify(names));
   window.location.href = 'map.html';
 }

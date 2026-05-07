@@ -3,6 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=1024, initial-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <style id="vp-scale"></style>
+  <script>
+    (function () {
+      function applyScale() {
+        var s = window.innerWidth / 1024;
+        var h = (window.innerHeight / s).toFixed(4);
+        document.documentElement.style.setProperty('--vw', '10.24px');
+        document.getElementById('vp-scale').textContent =
+          'html{zoom:' + s + '}' +
+          'body{height:' + h + 'px!important;overflow:hidden!important}';
+      }
+      applyScale();
+      window.addEventListener('resize', applyScale);
+    })();
+  </script>
   <title>Blossom & Koi Garden</title>
   <link rel="stylesheet" href="css/home.css" />
   <link rel="stylesheet" href="css/card.css" />
@@ -97,8 +112,8 @@
       <button class="start-btn" onclick="openPlayerSelection()">
         <img src="assets/images/home/start_button.png" alt="Start Game" />
       </button>
-      <button class="continue-btn" id="continue-btn" onclick="continueGame()" style="display:none">
-        Load Game
+      <button class="continue-btn" id="continue-btn" onclick="openLoadScreen()" style="display:none">
+        <img src="assets/images/home/loadgame.png" alt="Load Game" />
       </button>
     </div>
 
@@ -144,6 +159,10 @@
         </button>
 
       </div>
+
+      <!-- Name inputs — right-side vertical stack, outside the panel -->
+      <div id="name-inputs" class="name-inputs-col" style="display:none"></div>
+
     </div>
   </div>
 
@@ -165,6 +184,17 @@
     </div>
   </div>
 
+  <!-- ── LOAD GAME MODAL ── -->
+  <div id="load-screen-modal" class="load-modal-overlay" onclick="if(event.target===this)closeLoadScreen()">
+    <div class="load-modal-panel">
+      <div class="load-modal-header">
+        <h2 class="load-modal-title">Load Game</h2>
+        <button class="load-modal-close" onclick="closeLoadScreen()">✕</button>
+      </div>
+      <div id="load-save-list" class="load-save-list"></div>
+    </div>
+  </div>
+
   <!-- ── SETTINGS MODAL ── -->
   <div id="settings-modal" class="settings-overlay" onclick="closeSettings(event)">
     <div class="settings-panel">
@@ -178,10 +208,17 @@
         </div>
       </div>
 
+      <div class="settings-row">
+        <span class="settings-label">Sound</span>
+        <button id="sound-toggle-btn" class="lang-btn" onclick="toggleSound()">ON</button>
+      </div>
+
       <button class="settings-close-btn" onclick="closeSettings()">Close</button>
     </div>
   </div>
 
+  <script src="js/bgm.js"></script>
+  <script src="js/sfx.js"></script>
   <script src="js/cards.js"></script>
   <script src="js/home.js"></script>
   <script>

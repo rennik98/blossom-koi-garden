@@ -37,7 +37,13 @@ const PLAYER_TOKENS = [
   'assets/images/map_game/player3.png',
   'assets/images/map_game/player4.png',
 ];
-const PLAYER_NAMES = ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
+const PLAYER_NAMES = (() => {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem('playerNames') || '[]');
+    const defaults = ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
+    return defaults.map((d, i) => saved[i] || d);
+  } catch { return ['Player 1', 'Player 2', 'Player 3', 'Player 4']; }
+})();
 
 // ── Token offsets (so players don't stack on same space) ──
 const TOKEN_OFFSETS = [
@@ -101,21 +107,66 @@ let   turnDirection  = 1;   // 1 = clockwise, -1 = counter-clockwise (Reverse! c
 let   isRolling      = false;
 
 // ── Persistence ──
-const SAVE_KEY = 'blossom_saved_game';
+const SAVES_KEY = 'blossom_saves';
+
+function getSaves() {
+  try { return JSON.parse(localStorage.getItem(SAVES_KEY) || '[]'); } catch { return []; }
+}
 
 function saveGame() {
-  localStorage.setItem(SAVE_KEY, JSON.stringify({
+  const saves = getSaves();
+  let saveId = sessionStorage.getItem('currentSaveId') || null;
+
+  const now = new Date();
+  const savedAt = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+    + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const names = (() => {
+    try { return JSON.parse(sessionStorage.getItem('playerNames') || '[]'); } catch { return []; }
+  })();
+
+  const data = {
     playerCount,
     positions:     [...positions],
     scores:        [...scores],
     frozenPlayers: [...frozenPlayers],
     currentTurn,
     turnDirection,
-  }));
+    playerNames:   names,
+    savedAt,
+  };
+
+  if (saveId) {
+    const idx = saves.findIndex(s => s.id === saveId);
+    if (idx >= 0) {
+      saves[idx] = { ...saves[idx], ...data };
+      localStorage.setItem(SAVES_KEY, JSON.stringify(saves));
+      return;
+    }
+  }
+
+  // First save for this session — assign a new slot
+  saveId = String(Date.now());
+  const maxSlot = saves.reduce((m, s) => Math.max(m, s.slot || 0), 0);
+  saves.push({ id: saveId, slot: maxSlot + 1, ...data });
+  sessionStorage.setItem('currentSaveId', saveId);
+  localStorage.setItem(SAVES_KEY, JSON.stringify(saves));
+}
+
+function saveGameManual() {
+  saveGame();
+  SFX.save();
+  const toast = document.getElementById('save-toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
 function clearSave() {
-  localStorage.removeItem(SAVE_KEY);
+  const saveId = sessionStorage.getItem('currentSaveId');
+  if (!saveId) return;
+  const saves = getSaves().filter(s => s.id !== saveId);
+  localStorage.setItem(SAVES_KEY, JSON.stringify(saves));
+  sessionStorage.removeItem('currentSaveId');
 }
 
 function goHome() {
@@ -125,9 +176,11 @@ function goHome() {
 
 // ── Init ──
 window.addEventListener('DOMContentLoaded', () => {
-  // Restore saved game if player count matches
-  const raw   = localStorage.getItem(SAVE_KEY);
-  const saved = raw ? JSON.parse(raw) : null;
+  const saveId = sessionStorage.getItem('currentSaveId') || null;
+  let saved = null;
+  if (saveId) {
+    saved = getSaves().find(s => s.id === saveId) || null;
+  }
   const isRestoring = saved && saved.playerCount === playerCount;
 
   if (isRestoring) {
@@ -238,6 +291,7 @@ function updateScore(playerIndex) {
 // ── Roll dice ──
 function rollDice() {
   if (isRolling) return;
+  BGM.start(); // guaranteed user gesture — kick off music if not already playing
   isRolling = true;
   const rollBtn  = document.getElementById('roll-btn');
   const diceFace = document.getElementById('dice-face');
@@ -246,6 +300,7 @@ function rollDice() {
 
   let ticks = 0;
   const interval = setInterval(() => {
+    SFX.diceRoll();
     const rand = Math.ceil(Math.random() * 6);
     diceFace.src = `assets/images/map_game/${rand}dice.png`;
     if (++ticks >= 8) {
@@ -253,6 +308,7 @@ function rollDice() {
       const result = Math.ceil(Math.random() * 6);
       diceFace.src = `assets/images/map_game/${result}dice.png`;
       diceFace.classList.remove('rolling');
+      SFX.diceLand();
       movePlayer(result);
     }
   }, 100);
@@ -271,6 +327,7 @@ function movePlayer(steps) {
     }
     positions[currentTurn]++;
     step++;
+    SFX.tokenStep();
     const token = document.getElementById(`token-${currentTurn}`);
     placeToken(token, positions[currentTurn], currentTurn);
   }, 350);
@@ -279,14 +336,21 @@ function movePlayer(steps) {
 // ── Handle landing on a space ──
 function onLand(playerIndex, spaceIndex) {
   const space = SPACES[spaceIndex];
-  console.log(`${PLAYER_NAMES[playerIndex]} landed on: ${space.type} (#${spaceIndex})`);
+
+  const landSfx = {
+    reward:   () => SFX.landReward(),
+    punish:   () => SFX.landPunish(),
+    event:    () => SFX.landEvent(),
+    minigame: () => SFX.landMinigame(),
+    normal:   () => SFX.landNormal(),
+  };
+  (landSfx[space.type] || (() => {}))();
 
   if (space.type === 'end') {
     showGameEnd(playerIndex);
     return;
   }
 
-  // Show card popup (defined in gameplay.js)
   showCardPopup(space.type, playerIndex);
 }
 
@@ -315,7 +379,8 @@ function endTurn() {
 
 // ── Game end screen ──
 function showGameEnd(winnerIndex) {
-  clearSave(); // game is over — no need to keep the save
+  SFX.win();
+  clearSave();
   const sorted = PLAYER_NAMES.slice(0, playerCount)
     .map((name, i) => ({ name, score: scores[i] }))
     .sort((a, b) => b.score - a.score);
