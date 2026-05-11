@@ -90,8 +90,9 @@ function getCardForSpace(spaceType) {
 }
 
 // ── State ──
-let activeCard    = null;
-let h2hChallenger = -1;
+let activeCard           = null;
+let h2hChallenger        = -1;
+let currentCardPlayerIdx = -1;
 
 // Stopwatch state
 let swInterval = null;
@@ -100,6 +101,29 @@ let swSeconds  = 0;
 // Vote state
 let voteData = null;
 
+// ── Language switch while card/vote is open ──
+function cardOverlaySetLang(lang) {
+  mapSetLang(lang);
+  if (voteData) {
+    renderVoteScreen();
+  } else if (activeCard) {
+    buildPopup(activeCard.deck, activeCard.card, currentCardPlayerIdx);
+  }
+}
+
+// ── Header HTML (player name + lang buttons) ──
+function overlayHeaderHTML(playerIndex) {
+  const th = isLangTh();
+  return `
+    <div class="card-overlay-header">
+      <span class="card-overlay-player-name">🌸 ${PLAYER_NAMES[playerIndex]}</span>
+      <div class="card-overlay-lang-btns">
+        <button class="card-lang-btn ${!th ? 'active' : ''}" onclick="cardOverlaySetLang('en')">EN</button>
+        <button class="card-lang-btn ${th  ? 'active' : ''}" onclick="cardOverlaySetLang('th')">TH</button>
+      </div>
+    </div>`;
+}
+
 // ── Show card popup when player lands ──
 function showCardPopup(spaceType, playerIndex) {
   if (spaceType === 'start' || spaceType === 'end') return;
@@ -107,7 +131,8 @@ function showCardPopup(spaceType, playerIndex) {
   const result = getCardForSpace(spaceType);
   if (!result) return;
 
-  activeCard = result;
+  activeCard           = result;
+  currentCardPlayerIdx = playerIndex;
   const { deck, card } = result;
 
   // Pick challenger for h2h
@@ -205,6 +230,8 @@ function buildPopup(deck, card, playerIndex) {
     : `assets/images/card/illustration_pic/Morning Stretch.png`;
 
   overlay.innerHTML = `
+    <div class="card-overlay-wrap">
+    ${overlayHeaderHTML(playerIndex)}
     <div class="card-popup">
       <img class="card-bg-img" src="${theme.bgImg}" alt="" />
 
@@ -236,6 +263,7 @@ function buildPopup(deck, card, playerIndex) {
 
         </div>
       </div>
+    </div>
     </div>
   `;
 }
@@ -317,6 +345,8 @@ function renderVoteScreen() {
   const remaining = voters.filter(i => votes[i] === undefined).length;
 
   document.getElementById('card-overlay').innerHTML = `
+    <div class="card-overlay-wrap">
+    ${overlayHeaderHTML(playerIndex)}
     <div class="vote-panel" style="--accent:${theme.badge}">
       <div class="vote-header">
         <div class="vote-title">${ui('voteTitle')}</div>
@@ -326,6 +356,7 @@ function renderVoteScreen() {
       ${remaining > 0
         ? `<div class="vote-footer">${(isLangTh() ? CARD_UI.th : CARD_UI.en).voteWaiting(remaining)}</div>`
         : ''}
+    </div>
     </div>
   `;
 }
@@ -446,11 +477,207 @@ function applyCardEffect() {
       closeCardPopup();
       showMinigameForAll();
       return;
+
+    // ── Effects that need player-picker or special flow ──
+    case 'sharePoints': {
+      // Friendship Fountain: both the current player and a chosen player get +value pts
+      if (playerCount <= 1) {
+        scores[currentTurn] += card.value;
+        updateScore(currentTurn);
+        showToast(`🌸 +${card.value} ${ui('pts')}!`);
+        break;
+      }
+      showPlayerPicker(
+        isLangTh() ? `เลือกคนที่จะชม…` : `Choose someone to compliment…`,
+        (target) => {
+          scores[currentTurn] += card.value;
+          scores[target]      += card.value;
+          updateScore(currentTurn);
+          updateScore(target);
+          closeCardPopup();
+          showToast(`🌸 ${PLAYER_NAMES[currentTurn]} & ${PLAYER_NAMES[target]} +${card.value} ${ui('pts')}!`);
+          endTurn();
+        }
+      );
+      return;
+    }
+    case 'givePoints': {
+      // Canyon Trap: give card.value pts to the last-place player (not self)
+      let lastPlace = -1, minSc = Infinity;
+      for (let i = 0; i < playerCount; i++) {
+        if (i !== currentTurn && scores[i] < minSc) { minSc = scores[i]; lastPlace = i; }
+      }
+      if (lastPlace === -1) lastPlace = currentTurn; // fallback: 1-player game
+      scores[lastPlace] += card.value;
+      updateScore(lastPlace);
+      showToast(`😢 ${PLAYER_NAMES[currentTurn]} gives ${card.value} ${ui('pts')} → ${PLAYER_NAMES[lastPlace]}!`);
+      break;
+    }
+    case 'bossCard':
+      closeCardPopup();
+      showBossChallenge();
+      return;
+    case 'swap': {
+      // Swap Places!: swap position with the player directly ahead
+      const myPos = positions[currentTurn];
+      let target = -1, minDiff = Infinity;
+      for (let i = 0; i < playerCount; i++) {
+        if (i === currentTurn) continue;
+        const diff = positions[i] - myPos;
+        if (diff > 0 && diff < minDiff) { minDiff = diff; target = i; }
+      }
+      if (target >= 0) {
+        [positions[currentTurn], positions[target]] = [positions[target], positions[currentTurn]];
+        placeToken(document.getElementById(`token-${currentTurn}`), positions[currentTurn], currentTurn);
+        placeToken(document.getElementById(`token-${target}`), positions[target], target);
+        showToast(`🔀 ${PLAYER_NAMES[currentTurn]} ⇄ ${PLAYER_NAMES[target]}!`);
+      } else {
+        showToast(isLangTh() ? `🔀 ไม่มีใครอยู่ข้างหน้า!` : `🔀 No one ahead — no swap!`);
+      }
+      break;
+    }
+    case 'giveAndGet': {
+      // Gift of Kindness: give +2 to chosen player, self gets +1
+      if (playerCount <= 1) {
+        scores[currentTurn] += 3;
+        updateScore(currentTurn);
+        showToast(`🎁 +3 ${ui('pts')}!`);
+        break;
+      }
+      showPlayerPicker(
+        isLangTh() ? `เลือกผู้เล่นที่จะให้ +2 คะแนน…` : `Choose a player to give +2 pts…`,
+        (target) => {
+          scores[target]      += 2;
+          scores[currentTurn] += 1;
+          updateScore(target);
+          updateScore(currentTurn);
+          closeCardPopup();
+          showToast(`🎁 ${PLAYER_NAMES[target]} +2, ${PLAYER_NAMES[currentTurn]} +1 ${ui('pts')}!`);
+          endTurn();
+        }
+      );
+      return;
+    }
+    case 'timeWarp': {
+      // Time Warp: move to the nearest mini-game space and replay it
+      const myPos = positions[currentTurn];
+      let targetSpace = -1, nearestDist = Infinity;
+      for (let i = 0; i < SPACES.length; i++) {
+        if (SPACES[i].type === 'minigame' && i !== myPos) {
+          const dist = Math.abs(i - myPos);
+          if (dist < nearestDist) { nearestDist = dist; targetSpace = i; }
+        }
+      }
+      if (targetSpace >= 0) {
+        positions[currentTurn] = targetSpace;
+        placeToken(document.getElementById(`token-${currentTurn}`), targetSpace, currentTurn);
+        closeCardPopup();
+        showToast(isLangTh()
+          ? `⏪ ${PLAYER_NAMES[currentTurn]} วาร์ปไปช่องมินิเกม!`
+          : `⏪ ${PLAYER_NAMES[currentTurn]} warped to mini-game!`);
+        showMinigameForAll();
+        return;
+      }
+      break;
+    }
+
     default:
       showToast(`✅ Effect applied!`);
   }
 
   closeCardPopup();
+  endTurn();
+}
+
+// ── Player picker (for sharePoints / giveAndGet) ──
+function showPlayerPicker(promptText, callback) {
+  window._playerPickerCb = callback;
+  const btns = [];
+  for (let i = 0; i < playerCount; i++) {
+    if (i !== currentTurn) {
+      btns.push(`<button class="card-btn card-btn-confirm picker-player-btn" onclick="playerPickerPick(${i})">${PLAYER_NAMES[i]}</button>`);
+    }
+  }
+  document.getElementById('card-overlay').innerHTML = `
+    <div class="card-overlay-wrap">
+      ${overlayHeaderHTML(currentTurn)}
+      <div class="player-picker-panel">
+        <div class="player-picker-prompt">${promptText}</div>
+        <div class="player-picker-btns">${btns.join('')}</div>
+      </div>
+    </div>
+  `;
+}
+
+function playerPickerPick(targetIdx) {
+  const cb = window._playerPickerCb;
+  window._playerPickerCb = null;
+  if (cb) cb(targetIdx);
+}
+
+// ── Boss Challenge (for bossCard effect) ──
+function showBossChallenge() {
+  const hardCards = ACTIVITY_CARDS.filter(c => c.diff === 'Hard');
+  let card = hardCards[Math.floor(Math.random() * hardCards.length)];
+  if (card.manualKey) card = resolveManualCard(card);
+
+  const theme     = CATEGORY_THEMES[card.category] || CATEGORY_THEMES.event;
+  const overlay   = document.getElementById('card-overlay');
+  const th        = isLangTh();
+  const illustSrc = card.illus
+    ? `assets/images/card/illustration_pic/${card.illus}.png`
+    : `assets/images/card/illustration_pic/Morning Stretch.png`;
+
+  overlay.innerHTML = `
+    <div class="card-overlay-wrap">
+      ${overlayHeaderHTML(currentTurn)}
+      <div class="card-popup">
+        <img class="card-bg-img" src="${theme.bgImg}" alt="" />
+        <div class="card-inner">
+          <div class="card-illus-wrap">
+            <img class="card-illus-img" src="${illustSrc}" alt="illustration" />
+          </div>
+          <div class="card-content-panel">
+            <div class="card-top-row">
+              <div class="card-badge" style="background:#c62828;color:#fff">
+                👹 ${th ? 'บอสท้าทาย!' : 'Boss Challenge!'}
+              </div>
+              <div class="card-points-badge">+5 ${ui('pts')}</div>
+            </div>
+            <div class="card-title-en" style="color:${theme.text}">${cardText(card, 'title')}</div>
+            <div class="card-instruction-en">${cardText(card, 'instruction')}</div>
+            <div class="card-bottom-row">
+              <div class="card-actions">
+                <button class="card-btn card-btn-success" onclick="bossSuccess()">
+                  ${ui('success')} +5 ${ui('pts')}
+                </button>
+                <button class="card-btn card-btn-fail" onclick="bossFail()">
+                  ${ui('fail')} −3 ${th ? 'ช่อง' : 'spaces'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  overlay.classList.add('active');
+}
+
+function bossSuccess() {
+  scores[currentTurn] += 5;
+  updateScore(currentTurn);
+  closeCardPopup();
+  showToast(`👹 Boss defeated! ${PLAYER_NAMES[currentTurn]} +5 ${ui('pts')}!`);
+  endTurn();
+}
+
+function bossFail() {
+  movePlayerBack(currentTurn, 3);
+  closeCardPopup();
+  showToast(isLangTh()
+    ? `👹 บอสชนะ! ${PLAYER_NAMES[currentTurn]} ถอย 3 ช่อง!`
+    : `👹 Boss wins! ${PLAYER_NAMES[currentTurn]} goes back 3 spaces!`);
   endTurn();
 }
 
@@ -480,11 +707,12 @@ function showMinigameForAll() {
 function closeCardPopup() {
   SFX.cardClose();
   clearInterval(swInterval);
-  swInterval = null;
-  swSeconds  = 0;
-  voteData   = null;
+  swInterval           = null;
+  swSeconds            = 0;
+  voteData             = null;
+  activeCard           = null;
+  currentCardPlayerIdx = -1;
   document.getElementById('card-overlay').classList.remove('active');
-  activeCard = null;
 }
 
 // ── Toast notification ──

@@ -146,43 +146,39 @@ const MANUAL_DATA = {
 // ── REWARD / PUNISH / EVENT / MINIGAME CARDS (No illus property) ──
 
 const REWARD_CARDS = [
-  { id:'r01', title:'Lucky Clover', titleTh:'โคลเวอร์นำโชค', space:3, effect:'points', value:2, description:'+2 bonus points!', descriptionTh:'รับ +2 คะแนนโบนัส!' },
-  { id:'r02', title:'Treasure Chest', titleTh:'หีบสมบัติ', space:10, effect:'draw2', value:0, description:'Draw 2 cards, pick 1 to play next turn.', descriptionTh:'จั่ว 2 ใบ เลือก 1 ใบเพื่อเล่นในรอบถัดไป' },
-  { id:'r03', title:'Friendship Fountain', titleTh:'น้ำพุแห่งมิตรภาพ', space:18, effect:'sharePoints', value:2, description:'Compliment someone → both get +2 pts!', descriptionTh:'ชมใครสักคน → ทั้งคู่รับ +2 คะแนน!' },
-  { id:'r04', title:'Golden Star', titleTh:'ดาวทอง', space:29, effect:'extraTurn', value:0, description:'Take an extra turn immediately!', descriptionTh:'รับตาพิเศษทันที!' },
-  { id:'r05', title:'Victory Boost', titleTh:'พลังแห่งชัยชนะ', space:36, effect:'move', value:2, description:'Move forward +2 extra spaces!', descriptionTh:'เดินไปข้างหน้าอีก +2 ช่อง!' },
+  { id:'r01', title:'Lucky Clover',        titleTh:'โคลเวอร์นำโชค',      space:3,  effect:'points',      value:2, description:'+2 bonus points!',                          descriptionTh:'รับ +2 คะแนนโบนัส!' },
+  { id:'r03', title:'Friendship Fountain', titleTh:'น้ำพุแห่งมิตรภาพ',  space:18, effect:'sharePoints',  value:2, description:'Compliment someone → both get +2 pts!',     descriptionTh:'ชมใครสักคน → ทั้งคู่รับ +2 คะแนน!' },
+  { id:'r04', title:'Golden Star',         titleTh:'ดาวทอง',             space:29, effect:'extraTurn',   value:0, description:'Take an extra turn immediately!',            descriptionTh:'รับตาพิเศษทันที!' },
+  { id:'r05', title:'Victory Boost',       titleTh:'พลังแห่งชัยชนะ',    space:36, effect:'move',        value:2, description:'Move forward +2 extra spaces!',              descriptionTh:'เดินไปข้างหน้าอีก +2 ช่อง!' },
 ];
 
 const PUNISH_CARDS = [
-  { id:'p01', title:'Foggy Path', titleTh:'ทางหมอก', space:7, effect:'moveBack', value:2, description:'Go back 2 spaces.', descriptionTh:'ถอยหลัง 2 ช่อง' },
-  { id:'p02', title:'Slippery Slope', titleTh:'ทางลื่น', space:14, effect:'skipDraw', value:0, description:'Skip your next card draw.', descriptionTh:'ข้ามการจั่วไพ่ในรอบถัดไป' },
-  { id:'p03', title:'Canyon Trap', titleTh:'กับดักหุบเขา', space:23, effect:'givePoints', value:2, description:'Give 2 pts to the last-place player.', descriptionTh:'ให้ 2 คะแนนแก่ผู้เล่นที่อยู่ท้ายสุด' },
-  { id:'p04', title:'Trickster Ghost', titleTh:'ผีซุกซน', space:31, effect:'loseStreak', value:0, description:'Lose your streak bonus.', descriptionTh:'เสียโบนัสสตรีค' },
-  { id:'p05', title:'Boss Challenge', titleTh:'บอสท้าทาย', space:38, effect:'bossCard', value:0, description:'Draw a Hard card. Succeed = +5pts! Fail = go back 3 spaces.', descriptionTh:'จั่วไพ่ Hard ถ้าสำเร็จ +5 คะแนน ถ้าล้มเหลวถอย 3 ช่อง' },
+  { id:'p01', title:'Foggy Path',      titleTh:'ทางหมอก',      space:7,  effect:'moveBack',   value:2, description:'Go back 2 spaces.',                                                    descriptionTh:'ถอยหลัง 2 ช่อง' },
+  { id:'p03', title:'Canyon Trap',     titleTh:'กับดักหุบเขา', space:23, effect:'givePoints', value:2, description:'Give 2 pts to the last-place player.',                                 descriptionTh:'ให้ 2 คะแนนแก่ผู้เล่นที่อยู่ท้ายสุด' },
+  { id:'p05', title:'Boss Challenge',  titleTh:'บอสท้าทาย',   space:38, effect:'bossCard',   value:0, description:'Draw a Hard card. Succeed = +5 pts! Fail = go back 3 spaces.',         descriptionTh:'จั่วไพ่ Hard ถ้าสำเร็จ +5 คะแนน ถ้าล้มเหลวถอย 3 ช่อง' },
 ];
 
 const EVENT_CARDS = [
-  { id:'e01', title:'Swap Places!', titleTh:'สลับที่!', type:'Chaos', effect:'swap', description:'Swap board positions with the player ahead of you.', descriptionTh:'สลับตำแหน่งกับผู้เล่นที่อยู่ข้างหน้า' },
-  { id:'e02', title:'Double or Nothing', titleTh:'คูณสองหรือศูนย์', type:'Gamble', effect:'doubleOrNothing', description:'Coin flip: heads = +3 pts, tails = -2 pts.', descriptionTh:'โยนเหรียญ: หัว +3 คะแนน ก้อย -2 คะแนน' },
-  { id:'e03', title:'Gift of Kindness', titleTh:'ของขวัญแห่งความดี', type:'Reward', effect:'giveAndGet', description:'Give +2 to any player, you get +1.', descriptionTh:'ให้ +2 คะแนนแก่ผู้เล่นใดก็ได้ คุณรับ +1' },
-  { id:'e04', title:'Reverse!', titleTh:'กลับทาง!', type:'Chaos', effect:'reverse', description:'Turn order goes counter-clockwise for 2 rounds!', descriptionTh:'ลำดับการเล่นสวนทางเป็นเวลา 2 รอบ!' },
-  { id:'e05', title:'Everybody Dance!', titleTh:'เต้นกันทุกคน!', type:'Group', effect:'groupDance', description:'All players dance for 15 seconds — all get +1 pt!', descriptionTh:'ทุกคนเต้น 15 วินาที ทุกคนรับ +1 คะแนน!' },
-  { id:'e06', title:'Steal a Star', titleTh:'ขโมยดาว', type:'Punish', effect:'steal', description:'Steal 2 pts from the player in 1st place!', descriptionTh:'ขโมย 2 คะแนนจากผู้เล่นที่อยู่อันดับ 1!' },
-  { id:'e07', title:'Time Warp', titleTh:'บิดเวลา', type:'Chaos', effect:'timeWarp', description:'Return to nearest mini-game space and replay it!', descriptionTh:'กลับไปที่ช่องมินิเกมที่ใกล้ที่สุดและเล่นใหม่!' },
-  { id:'e08', title:'Lucky Break', titleTh:'โชคดี', type:'Reward', effect:'luckyMove', description:'Roll the die, move that many extra spaces forward!', descriptionTh:'โยนลูกเต๋า เดินไปข้างหน้าเพิ่มตามผลลูกเต๋า!' },
-  { id:'e09', title:'Freeze!', titleTh:'แข็งตัว!', type:'Punish', effect:'freeze', description:'Cannot move next turn (but still draw a card and score).', descriptionTh:'ไม่สามารถเดินในรอบถัดไป แต่ยังจั่วไพ่และรับคะแนนได้' },
-  { id:'e10', title:'Bonus Round', titleTh:'รอบโบนัส', type:'Group', effect:'bonusRound', description:'Trigger a random mini-game for ALL players!', descriptionTh:'เปิดมินิเกมสุ่มสำหรับผู้เล่นทุกคน!' },
-  { id:'e11', title:'Point Earthquake', titleTh:'แผ่นดินไหวคะแนน', type:'Chaos', effect:'quake', description:'Players with 10+ pts lose 3. Players under 10 gain 2.', descriptionTh:'ผู้ที่มี 10+ คะแนนเสีย 3 ผู้ที่ต่ำกว่า 10 ได้ 2' },
-  { id:'e12', title:'Shield Bubble', titleTh:'ฟองกันภัย', type:'Reward', effect:'shield', description:'Block the next punishment or negative event card!', descriptionTh:'บล็อกการ์ดลงโทษหรืออีเวนต์ลบถัดไป!' },
+  { id:'e01', title:'Swap Places!',       titleTh:'สลับที่!',                type:'Chaos',  effect:'swap',            description:'Swap board positions with the player ahead of you.',               descriptionTh:'สลับตำแหน่งกับผู้เล่นที่อยู่ข้างหน้า' },
+  { id:'e02', title:'Double or Nothing',  titleTh:'คูณสองหรือศูนย์',         type:'Gamble', effect:'doubleOrNothing', description:'Coin flip: heads = +3 pts, tails = -2 pts.',                       descriptionTh:'โยนเหรียญ: หัว +3 คะแนน ก้อย -2 คะแนน' },
+  { id:'e03', title:'Gift of Kindness',   titleTh:'ของขวัญแห่งความดี',       type:'Reward', effect:'giveAndGet',      description:'Give +2 to any player, you get +1.',                               descriptionTh:'ให้ +2 คะแนนแก่ผู้เล่นใดก็ได้ คุณรับ +1' },
+  { id:'e04', title:'Reverse!',           titleTh:'กลับทาง!',                type:'Chaos',  effect:'reverse',         description:'Turn order goes counter-clockwise for 2 rounds!',                 descriptionTh:'ลำดับการเล่นสวนทางเป็นเวลา 2 รอบ!' },
+  { id:'e05', title:'Everybody Dance!',   titleTh:'เต้นกันทุกคน!',           type:'Group',  effect:'groupDance',      description:'All players dance for 15 seconds — all get +1 pt!',               descriptionTh:'ทุกคนเต้น 15 วินาที ทุกคนรับ +1 คะแนน!' },
+  { id:'e06', title:'Steal a Star',       titleTh:'ขโมยดาว',                 type:'Punish', effect:'steal',           description:'Steal 2 pts from the player in 1st place!',                       descriptionTh:'ขโมย 2 คะแนนจากผู้เล่นที่อยู่อันดับ 1!' },
+  { id:'e07', title:'Time Warp',          titleTh:'บิดเวลา',                 type:'Chaos',  effect:'timeWarp',        description:'Return to nearest mini-game space and replay it!',                 descriptionTh:'กลับไปที่ช่องมินิเกมที่ใกล้ที่สุดและเล่นใหม่!' },
+  { id:'e08', title:'Lucky Break',        titleTh:'โชคดี',                   type:'Reward', effect:'luckyMove',       description:'Roll the die, move that many extra spaces forward!',               descriptionTh:'โยนลูกเต๋า เดินไปข้างหน้าเพิ่มตามผลลูกเต๋า!' },
+  { id:'e09', title:'Freeze!',            titleTh:'แข็งตัว!',                type:'Punish', effect:'freeze',          description:'Cannot move next turn (but still draw a card/score).',            descriptionTh:'ไม่สามารถเดินในรอบถัดไป แต่ยังจั่วไพ่และรับคะแนนได้' },
+  { id:'e10', title:'Bonus Round',        titleTh:'รอบโบนัส',               type:'Group',  effect:'bonusRound',      description:'Trigger a random mini-game for ALL players!',                      descriptionTh:'เปิดมินิเกมสุ่มสำหรับผู้เล่นทุกคน!' },
+  { id:'e11', title:'Point Earthquake',   titleTh:'แผ่นดินไหวคะแนน',         type:'Chaos',  effect:'quake',           description:'Players with 10+ pts lose 3. Players under 10 gain 2.',            descriptionTh:'ผู้ที่มี 10+ คะแนนเสีย 3 ผู้ที่ต่ำกว่า 10 ได้ 2' },
 ];
 
 const MINIGAME_CARDS = [
-  { id:'mg01', title:'Quick Quiz', titleTh:'ควิซด่วน', time:60, points:3, description:'3 rapid trivia questions. First correct answer scores!', descriptionTh:'คำถามไตรเวีย 3 ข้อ คนตอบถูกก่อนรับคะแนน!' },
-  { id:'mg02', title:'Stretch Race', titleTh:'แข่งยืดเส้น', time:45, points:3, description:'Race: 10 arm circles + 5 shoulder rolls + 10 toe taps. Fastest wins!', descriptionTh:'แข่ง: วนแขน 10 ครั้ง + หมุนไหล่ 5 + แตะเท้า 10 เร็วที่สุดชนะ!' },
-  { id:'mg03', title:'Story Slam', titleTh:'ประกวดเรื่องเล่า', time:120, points:4, description:'Each player tells a 30-sec story on the same topic. Group votes best!', descriptionTh:'แต่ละคนเล่าเรื่อง 30 วินาทีในหัวข้อเดียวกัน กลุ่มโหวต!' },
-  { id:'mg04', title:'Memory Mayhem', titleTh:'ดวลความจำ', time:90, points:4, description:'Memorize 10 objects in 30s. Most recalled wins!', descriptionTh:'จำวัตถุ 10 ชิ้นใน 30 วินาที ใครจำได้มากสุดชนะ!' },
-  { id:'mg05', title:'Final Showdown', titleTh:'ศึกชิงชัย', time:120, points:5, description:'Rhyme elimination! Go around — hesitate or repeat and you\'re out. Last one wins!', descriptionTh:'แข่งสัมผัส ใครลังเลหรือซ้ำออก คนสุดท้ายชนะ!' },
-  { id:'mg06', title:'Finger Gymnastics', titleTh:'ยิมนาสติกนิ้ว', time:45, points:2, description:'Copy the hand patterns shown. Gets harder each round. Most correct wins!', descriptionTh:'เลียนแบบรูปแบบมือ ยากขึ้นเรื่อยๆ ถูกมากสุดชนะ!' },
-  { id:'mg07', title:'Hum That Tune', titleTh:'ฮัมเพลง', time:180, points:3, description:'Hum famous songs. Others guess the title. Most correct guesses wins!', descriptionTh:'ฮัมเพลงดัง คนอื่นทาย คนทายถูกมากสุดชนะ!' },
-  { id:'mg08', title:'Number Crunch', titleTh:'ประลองตัวเลข', time:60, points:3, description:'Mental math race — 5 problems. Most correct wins!', descriptionTh:'แข่งคณิตศาสตร์ในใจ 5 ข้อ ถูกมากสุดชนะ!' },
+  { id:'mg01', title:'Brain Duel',         titleTh:'รู้หมือไร่',       diff:'Medium', time:60,  points:3, description:'1 rapid trivia question. First correct answer scores!',                                                                                    descriptionTh:'ถามความรู้รอบตัว 1 ข้อ คนตอบถูกก่อนรับคะแนน!' },
+  { id:'mg02', title:'Stretch Race',       titleTh:'ยืดไม่ยั้ง',       diff:'Easy',   time:45,  points:2, description:'Race: 10 arm circles + 5 shoulder rolls + 10 toe taps. Fastest wins!',                                                                    descriptionTh:'แข่ง: หมุนแขน 10 ครั้ง + หมุนไหล่ 5 ครั้ง + เคาะนิ้วโป้งเท้า 10 ครั้ง ใครทำได้เร็วที่สุดชนะ!' },
+  { id:'mg03', title:'Story Slam',         titleTh:'เล่า ลืม ลา',      diff:'Hard',   time:120, points:4, description:'Each player tells a 30-sec story on the same topic. Group votes best!',                                                                    descriptionTh:'เปิดเล่มคู่มือ เลือกมา 1 หัวข้อ แต่ละคนเล่าเรื่อง 30 วินาทีในหัวข้อเดียวกัน กลุ่มโหวตว่าเรื่องใครเจ๋งสุด คนนั้นชนะ' },
+  { id:'mg04', title:'Memory Mayhem',      titleTh:'ดวลความจำ',         diff:'Hard',   time:90,  points:4, description:'Memorize 5 words in 30 s. Most recalled wins!',                                                                                          descriptionTh:'เลือกชุดคำจากเล่มคู่มือ จำ 5 คำ ใน 30 วินาที ใครจำได้มากสุดชนะ!' },
+  { id:'mg05', title:'Word Chain',         titleTh:'ต่อปากต่อคำ',       diff:'Hard',   time:120, points:4, description:'Province category: Repeat all provinces before you, then add one more. Miss or mix up any = you\'re out. Last one standing wins!',         descriptionTh:'คำแรกเอ่ยชื่อจังหวัด คนต่อไปต้องทวนจังหวัดของคนก่อนหน้าทุกครั้ง ก่อนจะพูดชื่อจังหวัดถัดไป พูดผิดแพ้ เหลือใครคนสุดท้ายชนะ' },
+  { id:'mg06', title:'Finger Gymnastics',  titleTh:'ยิมนาสติกนิ้ว',    diff:'Medium', time:45,  points:3, description:'Take turns mirroring opposite hand gestures — one does "pinch", the other does "L". Switch each round. Mix it up = you\'re out!',          descriptionTh:'สลับกันทำท่าทางนิ้วเป็น "จีบ" และ "L" โดยแต่ละคนทำท่าทางตรงข้ามกับอีกฝ่าย ใครทำผิดแพ้' },
+  { id:'mg07', title:'Hum That Tune',      titleTh:'ฮัมมา ทายไป',      diff:'Medium', time:180, points:3, description:'Hum famous songs. Others guess the title. Most correct guesses wins!',                                                                     descriptionTh:'ร้องเพลงฮิตติดหู ให้คนอื่นทายชื่อเพลง คนที่ทายถูกมากสุดชนะ!' },
+  { id:'mg08', title:'Number Crunch',      titleTh:'คณิตคิดเร็ว',       diff:'Medium', time:60,  points:3, description:'Mental math race — 1 problem. Most correct wins!',                                                                                        descriptionTh:'แข่งคิดเลขในใจ 1 ข้อ ใครตอบถูกและเร็วที่สุดชนะ!' },
 ];
