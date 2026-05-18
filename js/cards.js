@@ -182,3 +182,21 @@ const MINIGAME_CARDS = [
   { id:'mg07', title:'Hum That Tune',      titleTh:'ฮัมมา ทายไป',      diff:'Medium', time:180, points:3, description:'Hum famous songs. Others guess the title. Most correct guesses wins!',                                                                     descriptionTh:'ร้องเพลงฮิตติดหู ให้คนอื่นทายชื่อเพลง คนที่ทายถูกมากสุดชนะ!' },
   { id:'mg08', title:'Number Crunch',      titleTh:'คณิตคิดเร็ว',       diff:'Medium', time:60,  points:3, description:'Mental math race — 1 problem. Most correct wins!',                                                                                        descriptionTh:'แข่งคิดเลขในใจ 1 ข้อ ใครตอบถูกและเร็วที่สุดชนะ!' },
 ];
+
+// ── Dev: validate every manualKey reference against MANUAL_DATA ──
+(function validateManualKeys() {
+  const allCards = [
+    ...ACTIVITY_CARDS,
+    ...REWARD_CARDS,
+    ...PUNISH_CARDS,
+    ...EVENT_CARDS,
+    ...MINIGAME_CARDS,
+  ];
+  allCards.forEach(card => {
+    if (card.manualKey && !(card.manualKey in MANUAL_DATA)) {
+      console.error(
+        `[BrainBlooming] ❌ Card "${card.id}" ("${card.title}") uses manualKey "${card.manualKey}" but it is MISSING from MANUAL_DATA!`
+      );
+    }
+  });
+})();
