@@ -42,6 +42,13 @@
   letter-spacing: 0.5px;
 }
 
+/* ── Header right cluster (lang buttons + TTS) ── */
+.card-overlay-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 /* ── In-overlay lang buttons ── */
 .card-overlay-lang-btns {
   display: flex;
@@ -69,6 +76,36 @@
   border-color: #f5d782;
   color: #f5d782;
 }
+
+/* ── TTS read-aloud button ── */
+.card-tts-btn {
+  padding: 6px 18px;
+  border-radius: 999px;
+  border: 2px solid rgba(245, 215, 130, 0.55);
+  background: rgba(245, 215, 130, 0.12);
+  color: #f5d782;
+  font-weight: 700;
+  font-size: clamp(12px, calc(1.2 * var(--vw, 10.24px)), 15px);
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+}
+.card-tts-btn:hover {
+  background: rgba(245, 215, 130, 0.25);
+  border-color: #f5d782;
+}
+.card-tts-btn.tts-active {
+  background: rgba(198, 40, 40, 0.75);
+  border-color: #ef9a9a;
+  color: #fff;
+  animation: ttsPulse 1.2s ease-in-out infinite;
+}
+@keyframes ttsPulse {
+  0%, 100% { box-shadow: 0 0 0 0   rgba(198, 40, 40, 0.55); }
+  50%       { box-shadow: 0 0 0 7px rgba(198, 40, 40, 0);    }
+}
+
 
 /* ── Card popup container ── */
 .card-popup {
@@ -308,6 +345,23 @@
 .card-btn-pass     { background: rgba(0,0,0,0.1);  color: rgba(0,0,0,0.6); border: 2px solid rgba(0,0,0,0.15); }
 .card-btn-confirm  { background: #1565c0; color: #fff; box-shadow: 0 4px 14px rgba(21,101,192,0.4); }
 
+.card-minigame-winner-label {
+  font-size: clamp(12px, calc(1.2 * var(--vw, 10.24px)), 15px);
+  font-weight: 700;
+  color: rgba(0,0,0,0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: 100%;
+  text-align: center;
+}
+.card-minigame-winner-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  width: 100%;
+}
+
 /* ── Toast notification ── */
 #game-toast {
   position: fixed;
@@ -459,3 +513,52 @@
   font-size: clamp(14px, calc(1.6 * var(--vw, 10.24px)), 18px);
   padding: clamp(12px, calc(1.4 * var(--vw, 10.24px)), 16px) clamp(24px, calc(3 * var(--vw, 10.24px)), 38px);
 }
+
+/* ── Dev Test Panel ── */
+.test-panel-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.test-panel {
+  background: #fff;
+  border-radius: 20px;
+  padding: clamp(18px, 2vw, 28px) clamp(20px, 2.5vw, 36px);
+  max-width: 700px;
+  width: 90%;
+  max-height: 88vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+}
+.test-panel-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(16px, calc(2 * var(--vw, 10.24px)), 22px);
+  font-weight: 800;
+  color: #1a1a1a;
+}
+.test-panel-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.test-panel-btn {
+  background: #f5f5f5;
+  border: 2px solid #e0e0e0;
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: clamp(11px, calc(1.1 * var(--vw, 10.24px)), 14px);
+  font-weight: 600;
+  font-family: Georgia, sans-serif;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.test-panel-btn:hover { background: #e8f5e9; border-color: #4caf50; }
+.test-panel-close { margin-top: 4px; }

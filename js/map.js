@@ -107,7 +107,7 @@ let   turnDirection  = 1;   // 1 = clockwise, -1 = counter-clockwise (Reverse! c
 let   isRolling      = false;
 
 // ── Persistence ──
-const SAVES_KEY = 'blossom_saves';
+const SAVES_KEY = 'brainblooming_saves';
 
 function getSaves() {
   try { return JSON.parse(localStorage.getItem(SAVES_KEY) || '[]'); } catch { return []; }

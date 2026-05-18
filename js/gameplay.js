@@ -10,11 +10,13 @@ const CARD_UI = {
     draw: '🤝 Draw', wins: 'Wins!',
     success: '✅ Success', fail: '❌ Fail', pass: '⏭ Pass',
     allCompete: '🎮 ALL players compete!',
+    chooseWinner: '🏆 Choose the Winner', noWinner: '❌ No Winner',
     points: 'POINTS', diff: 'DIFF',
     startTimer: '▶ Start', stopTimer: '⏹ Stop',
     voteTitle: '⭐ Vote Time!', voteFail: '❌ Fail', votePass: '✅ Pass',
     voteQ: (name) => `Did ${name} complete the challenge?`,
     voteWaiting: (n) => `Waiting for ${n} more…`,
+    ttsRead: '🔊 Read', ttsStop: '⏹ Stop',
     labels: { body:'🏃 Body', brain:'🧠 Brain', social:'💬 Social', h2h:'⚔️ H2H',
               reward:'🪷 Reward', punish:'👻 Punish', event:'❓ Event', minigame:'🎮 Mini-Game' },
   },
@@ -24,11 +26,13 @@ const CARD_UI = {
     draw: '🤝 เสมอ', wins: 'ชนะ!',
     success: '✅ สำเร็จ', fail: '❌ ล้มเหลว', pass: '⏭ ข้าม',
     allCompete: '🎮 ทุกคนแข่ง!',
+    chooseWinner: '🏆 เลือกผู้ชนะ', noWinner: '❌ ไม่มีผู้ชนะ',
     points: 'คะแนน', diff: 'ระดับ',
     startTimer: '▶ เริ่ม', stopTimer: '⏹ หยุด',
     voteTitle: '⭐ โหวตเลย!', voteFail: '❌ ไม่ผ่าน', votePass: '✅ ผ่าน',
     voteQ: (name) => `${name} ทำสำเร็จไหม?`,
     voteWaiting: (n) => `รออีก ${n} คน…`,
+    ttsRead: '🔊 อ่าน', ttsStop: '⏹ หยุด',
     labels: { body:'🏃 ร่างกาย', brain:'🧠 สมอง', social:'💬 สังคม', h2h:'⚔️ ดวล',
               reward:'🪷 รางวัล', punish:'👻 โทษ', event:'❓ เหตุการณ์', minigame:'🎮 มินิเกม' },
   },
@@ -44,6 +48,46 @@ function cardText(card, field) {
                                   ? (card.instructionTh || card.descriptionTh)
                                   : (card.instruction || card.description || '');
   return '';
+}
+
+// ── Text-to-Speech (accessibility for hearing-impaired / elderly) ──
+const TTS = {
+  speak(text, lang) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utt   = new SpeechSynthesisUtterance(text);
+    utt.lang    = lang === 'th' ? 'th-TH' : 'en-US';
+    utt.rate    = 0.82;
+    utt.pitch   = 1.0;
+    utt.volume  = 1.0;
+    utt.onstart = () => _ttsSetBtn(true);
+    utt.onend   = () => _ttsSetBtn(false);
+    utt.onerror = () => _ttsSetBtn(false);
+    window.speechSynthesis.speak(utt);
+  },
+  stop() {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    _ttsSetBtn(false);
+  },
+};
+
+function _ttsSetBtn(active) {
+  const btn = document.getElementById('tts-btn');
+  if (!btn) return;
+  btn.textContent = active ? ui('ttsStop') : ui('ttsRead');
+  btn.classList.toggle('tts-active', active);
+}
+
+function readCardAloud() {
+  if (!('speechSynthesis' in window)) return;
+  if (window.speechSynthesis.speaking) { TTS.stop(); return; }
+  const card = activeCard?.card;
+  if (!card) return;
+  const th    = isLangTh();
+  const title = cardText(card, 'title');
+  const instr = cardText(card, 'instruction').replace(/<[^>]+>/g, '');
+  TTS.speak(`${title}. ${instr}`, th ? 'th' : 'en');
 }
 
 // ── Category themes ──
@@ -103,6 +147,7 @@ let voteData = null;
 
 // ── Language switch while card/vote is open ──
 function cardOverlaySetLang(lang) {
+  TTS.stop();
   mapSetLang(lang);
   if (voteData) {
     renderVoteScreen();
@@ -111,15 +156,20 @@ function cardOverlaySetLang(lang) {
   }
 }
 
-// ── Header HTML (player name + lang buttons) ──
+// ── Header HTML (player name + lang buttons + TTS) ──
 function overlayHeaderHTML(playerIndex) {
-  const th = isLangTh();
+  const th      = isLangTh();
+  const ttsSupported = ('speechSynthesis' in window);
   return `
     <div class="card-overlay-header">
       <span class="card-overlay-player-name">🌸 ${PLAYER_NAMES[playerIndex]}</span>
-      <div class="card-overlay-lang-btns">
-        <button class="card-lang-btn ${!th ? 'active' : ''}" onclick="cardOverlaySetLang('en')">EN</button>
-        <button class="card-lang-btn ${th  ? 'active' : ''}" onclick="cardOverlaySetLang('th')">TH</button>
+      <div class="card-overlay-header-right">
+        <div class="card-overlay-lang-btns">
+          <button class="card-lang-btn ${!th ? 'active' : ''}" onclick="cardOverlaySetLang('en')">EN</button>
+          <button class="card-lang-btn ${th  ? 'active' : ''}" onclick="cardOverlaySetLang('th')">TH</button>
+        </div>
+        ${ttsSupported ? `<button class="card-tts-btn" id="tts-btn" onclick="readCardAloud()"
+            title="${th ? 'อ่านออกเสียง' : 'Read aloud'}">${ui('ttsRead')}</button>` : ''}
       </div>
     </div>`;
 }
@@ -208,17 +258,14 @@ function buildPopup(deck, card, playerIndex) {
         <button class="card-btn card-btn-pass" onclick="cardDraw()">${ui('draw')}</button>
       `;
     } else {
-      // minigame
+      // minigame — one winner button per player + no-winner
+      const playerBtns = Array.from({ length: playerCount }, (_, i) =>
+        `<button class="card-btn card-btn-success" onclick="cardSuccess(${i})">🏆 ${PLAYER_NAMES[i]}</button>`
+      ).join('');
       actionsHTML = `
-        <button class="card-btn card-btn-success" onclick="cardSuccess(${playerIndex})">
-          ${ui('success')}
-        </button>
-        <button class="card-btn card-btn-fail" onclick="cardFail()">
-          ${ui('fail')}
-        </button>
-        <button class="card-btn card-btn-pass" onclick="cardFail()">
-          ${ui('pass')}
-        </button>
+        <div class="card-minigame-winner-label">${ui('chooseWinner')}</div>
+        <div class="card-minigame-winner-btns">${playerBtns}</div>
+        <button class="card-btn card-btn-pass" onclick="cardFail()">${ui('noWinner')}</button>
       `;
     }
     bottomHTML = `<div class="card-actions">${actionsHTML}</div>`;
@@ -705,6 +752,7 @@ function showMinigameForAll() {
 
 // ── Close popup ──
 function closeCardPopup() {
+  TTS.stop();
   SFX.cardClose();
   clearInterval(swInterval);
   swInterval           = null;
@@ -728,4 +776,80 @@ function showToast(msg) {
   toast.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+}
+
+// ── Dev Test Panel ──
+const _TEST_ENTRIES = [
+  { label: '🏃 Body · Easy',          deck: 'activity', find: c => c.category === 'body'   && c.diff === 'Easy'   },
+  { label: '🏃 Body · Hard',          deck: 'activity', find: c => c.category === 'body'   && c.diff === 'Hard'   },
+  { label: '🧠 Brain · Easy',         deck: 'activity', find: c => c.category === 'brain'  && c.diff === 'Easy'   },
+  { label: '🧠 Brain · Hard',         deck: 'activity', find: c => c.category === 'brain'  && c.diff === 'Hard'   },
+  { label: '💬 Social · Easy',        deck: 'activity', find: c => c.category === 'social' && c.diff === 'Easy'   },
+  { label: '💬 Social · Hard',        deck: 'activity', find: c => c.category === 'social' && c.diff === 'Hard'   },
+  { label: '⚔️ H2H',                  deck: 'activity', find: c => c.category === 'h2h'                           },
+  { label: '🪷 Reward · +pts',        deck: 'reward',   find: c => c.effect === 'points'                          },
+  { label: '🪷 Reward · Share',       deck: 'reward',   find: c => c.effect === 'sharePoints'                     },
+  { label: '🪷 Reward · Extra Turn',  deck: 'reward',   find: c => c.effect === 'extraTurn'                       },
+  { label: '🪷 Reward · Move Fwd',    deck: 'reward',   find: c => c.effect === 'move'                            },
+  { label: '👻 Punish · Move Back',   deck: 'punish',   find: c => c.effect === 'moveBack'                        },
+  { label: '👻 Punish · Give Pts',    deck: 'punish',   find: c => c.effect === 'givePoints'                      },
+  { label: '👻 Punish · Boss',        deck: 'punish',   find: c => c.effect === 'bossCard'                        },
+  { label: '❓ Event · Swap',         deck: 'event',    find: c => c.effect === 'swap'                            },
+  { label: '❓ Event · Double/Nothing',deck: 'event',   find: c => c.effect === 'doubleOrNothing'                 },
+  { label: '❓ Event · Give & Get',   deck: 'event',    find: c => c.effect === 'giveAndGet'                      },
+  { label: '❓ Event · Reverse',      deck: 'event',    find: c => c.effect === 'reverse'                         },
+  { label: '❓ Event · Group Dance',  deck: 'event',    find: c => c.effect === 'groupDance'                      },
+  { label: '❓ Event · Steal',        deck: 'event',    find: c => c.effect === 'steal'                           },
+  { label: '❓ Event · Time Warp',    deck: 'event',    find: c => c.effect === 'timeWarp'                        },
+  { label: '❓ Event · Lucky Move',   deck: 'event',    find: c => c.effect === 'luckyMove'                       },
+  { label: '❓ Event · Freeze',       deck: 'event',    find: c => c.effect === 'freeze'                          },
+  { label: '❓ Event · Bonus Round',  deck: 'event',    find: c => c.effect === 'bonusRound'                      },
+  { label: '❓ Event · Quake',        deck: 'event',    find: c => c.effect === 'quake'                           },
+  { label: '🎮 Mini-Game',            deck: 'minigame', find: () => true                                          },
+];
+
+const _DECK_MAP = {
+  activity: ACTIVITY_CARDS,
+  reward:   REWARD_CARDS,
+  punish:   PUNISH_CARDS,
+  event:    EVENT_CARDS,
+  minigame: MINIGAME_CARDS,
+};
+
+function showTestPanel() {
+  const btns = _TEST_ENTRIES.map((e, i) =>
+    `<button class="test-panel-btn" onclick="testPanelPick(${i})">${e.label}</button>`
+  ).join('');
+  document.getElementById('card-overlay').innerHTML = `
+    <div class="test-panel-overlay">
+      <div class="test-panel">
+        <div class="test-panel-title">🧪 Card Test Panel</div>
+        <div class="test-panel-grid">${btns}</div>
+        <button class="card-btn card-btn-pass test-panel-close" onclick="closeTestPanel()">✕ Close</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('card-overlay').classList.add('active');
+}
+
+function testPanelPick(idx) {
+  const entry = _TEST_ENTRIES[idx];
+  if (!entry) return;
+  const pool = _DECK_MAP[entry.deck];
+  let card = pool.find(entry.find);
+  if (!card) return;
+  if (card.manualKey) card = resolveManualCard(card);
+  if (entry.deck === 'activity' && card.category === 'h2h') {
+    h2hChallenger = (currentTurn + 1) % playerCount;
+  } else {
+    h2hChallenger = -1;
+  }
+  activeCard = { deck: entry.deck, card };
+  currentCardPlayerIdx = currentTurn;
+  buildPopup(entry.deck, card, currentTurn);
+}
+
+function closeTestPanel() {
+  document.getElementById('card-overlay').innerHTML = '';
+  document.getElementById('card-overlay').classList.remove('active');
 }

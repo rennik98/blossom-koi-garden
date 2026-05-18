@@ -4,7 +4,7 @@
 
 // ── State ──
 let selectedPlayers = 0;
-const SAVES_KEY = 'blossom_saves';
+const SAVES_KEY = 'brainblooming_saves';
 
 function getSaves() {
   try { return JSON.parse(localStorage.getItem(SAVES_KEY) || '[]'); } catch { return []; }
