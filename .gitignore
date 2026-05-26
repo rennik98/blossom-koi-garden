@@ -11,3 +11,4 @@ dist/
 # IDE files
 .DS_Store
 .vscode/
+.vercel
