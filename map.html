@@ -20,8 +20,20 @@
     })();
   </script>
   <title>BrainBlooming — Map</title>
+  <meta name="description" content="BrainBlooming game board — a bilingual (Thai/English) digital board game that promotes body, brain, and social health for elderly players." />
+  <meta name="theme-color" content="#1a0e00" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+  <!-- Social preview (TODO: make og:image an absolute URL once the production domain is final) -->
+  <meta property="og:title" content="BrainBlooming" />
+  <meta property="og:description" content="A bilingual digital board game promoting body, brain, and social health for elderly players — Thailand Research Expo 2026." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/assets/icons/og-image.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="stylesheet" href="css/map.css" />
   <link rel="stylesheet" href="css/card.css" />
+  <script src="js/pwa.js" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Noto+Sans+Thai:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     /* ── Preloader — inlined so it's ready before external CSS ── */
@@ -75,6 +87,7 @@
     <div class="pre-bar-wrap"><div class="pre-bar" id="pre-bar"></div></div>
     <p class="pre-text" id="pre-text">0%</p>
   </div>
+  <script src="js/asset-manifest.js"></script>
   <script src="js/preload.js"></script>
 
   <div class="game-root">
@@ -101,13 +114,13 @@
 
     <!-- ── LANG TOGGLE ── -->
     <div class="map-lang-toggle">
-      <button class="map-lang-btn map-home-btn" onclick="goHome()" title="Back to Home">
+      <button class="map-lang-btn map-home-btn" onclick="goHome()" title="Back to Home" aria-label="Back to home">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;vertical-align:middle">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
         </svg>
       </button>
-      <button id="map-sound-btn" class="map-lang-btn map-home-btn" onclick="toggleMapSound()" title="Toggle Sound">🔊</button>
-      <button class="map-lang-btn map-home-btn map-save-btn" onclick="saveGameManual()" title="Save Game">
+      <button id="map-sound-btn" class="map-lang-btn map-home-btn" onclick="toggleMapSound()" title="Toggle Sound" aria-label="Toggle sound">🔊</button>
+      <button class="map-lang-btn map-home-btn map-save-btn" onclick="saveGameManual()" title="Save Game" aria-label="Save game">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;vertical-align:middle">
           <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
           <polyline points="17 21 17 13 7 13 7 21"/>
@@ -116,14 +129,15 @@
       </button>
       <button id="map-lang-en" class="map-lang-btn" onclick="mapSetLang('en')">EN</button>
       <button id="map-lang-th" class="map-lang-btn" onclick="mapSetLang('th')">TH</button>
-      <button class="map-lang-btn map-home-btn" onclick="showTestPanel()" title="Test Cards">🧪</button>
+      <!-- Debug-only: shown by appending ?debug to the URL -->
+      <button id="debug-btn" class="map-lang-btn map-home-btn" onclick="showTestPanel()" title="Test Cards" aria-label="Card test panel" style="display:none">🧪</button>
     </div>
 
     <!-- ── SAVE TOAST ── -->
     <div id="save-toast" class="save-toast">Game Saved!</div>
 
     <!-- ── FULLSCREEN BUTTON ── -->
-    <button class="fullscreen-btn" id="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen">
+    <button class="fullscreen-btn" id="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen" aria-label="Toggle fullscreen">
       <svg id="fs-expand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
         <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
@@ -167,6 +181,14 @@
   <script src="js/cards.js"></script>
   <script src="js/map.js"></script>
   <script src="js/gameplay.js"></script>
+  <!-- Portrait-phone hint — visibility handled purely by CSS media query -->
+  <div class="rotate-hint" role="status">
+    <div>
+      <div class="rotate-hint-icon">🔄</div>
+      หมุนอุปกรณ์เป็นแนวนอน<br />Please rotate your device
+    </div>
+  </div>
+
   <script>
     function toggleMapSound() {
       const on = BGM.toggle();
@@ -176,6 +198,11 @@
       document.getElementById('map-sound-btn').textContent = BGM.isEnabled() ? '🔊' : '🔇';
     }
     document.addEventListener('DOMContentLoaded', initMapSoundBtn);
+
+    // The 🧪 card test panel is a facilitator/dev tool — hidden unless ?debug is in the URL
+    if (new URLSearchParams(location.search).has('debug')) {
+      document.getElementById('debug-btn').style.display = '';
+    }
 
     function toggleFullscreen() {
       const el = document.documentElement;

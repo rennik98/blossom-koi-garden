@@ -2,8 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>BrainBlooming — Card Reference</title>
+  <meta name="description" content="Printable card reference for BrainBlooming — all activity, reward, punish, event, and minigame cards in English and Thai." />
+  <meta name="theme-color" content="#ede8dc" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="js/pwa.js" defer></script>
   <style>
     /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -286,10 +293,10 @@
                 ${card.points ? `<span class="pdf-pts">+${card.points} pts</span>` : ''}
               </div>
               <div class="pdf-title">${card.title}</div>
-              <div class="pdf-title-th">${card.titleTh || ''}</div>
+              <div class="pdf-title-th" lang="th">${card.titleTh || ''}</div>
               <div class="pdf-diff">${card.diff || ''}</div>
               <div class="pdf-instruction">${instr}</div>
-              <div class="pdf-instruction-th">${instrTh}</div>
+              <div class="pdf-instruction-th" lang="th">${instrTh}</div>
             </div>
           </div>
         </div>`;
@@ -314,10 +321,10 @@
                 ${card.points ? `<span class="pdf-pts">+${card.points} pts</span>` : ''}
               </div>
               <div class="pdf-title">${card.title}</div>
-              <div class="pdf-title-th">${card.titleTh || ''}</div>
+              <div class="pdf-title-th" lang="th">${card.titleTh || ''}</div>
               ${meta ? `<div class="pdf-diff">${meta}</div>` : ''}
               <div class="pdf-instruction">${desc}</div>
-              <div class="pdf-instruction-th">${descTh}</div>
+              <div class="pdf-instruction-th" lang="th">${descTh}</div>
             </div>
           </div>
         </div>`;

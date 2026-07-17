@@ -19,9 +19,21 @@
     })();
   </script>
   <title>BrainBlooming</title>
+  <meta name="description" content="BrainBlooming — a bilingual (Thai/English) digital board game that promotes body, brain, and social health for elderly players. เกมกระดานดิจิทัลส่งเสริมสุขภาพกาย สมอง และสังคมสำหรับผู้สูงอายุ" />
+  <meta name="theme-color" content="#f5c8a0" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+  <!-- Social preview (TODO: make og:image an absolute URL once the production domain is final) -->
+  <meta property="og:title" content="BrainBlooming" />
+  <meta property="og:description" content="A bilingual digital board game promoting body, brain, and social health for elderly players — Thailand Research Expo 2026." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/assets/icons/og-image.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="stylesheet" href="css/home.css" />
   <link rel="stylesheet" href="css/card.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Noto+Sans+Thai:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="js/pwa.js" defer></script>
   <style>
     /* ── Preloader — inlined so it's ready before external CSS ── */
     #preloader {
@@ -74,13 +86,14 @@
     <div class="pre-bar-wrap"><div class="pre-bar" id="pre-bar"></div></div>
     <p class="pre-text" id="pre-text">0%</p>
   </div>
+  <script src="js/asset-manifest.js"></script>
   <script src="js/preload.js"></script>
 
   <!-- ── BACKGROUND ── -->
   <div class="bg"></div>
 
   <!-- ── FULLSCREEN BUTTON ── -->
-  <button class="fullscreen-btn" id="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen">
+  <button class="fullscreen-btn" id="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen" aria-label="Toggle fullscreen">
     <svg id="fs-expand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
       <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
@@ -120,9 +133,6 @@
     <div class="bottom-btns">
       <button class="icon-btn" title="Settings"     onclick="openSettings()">
         <img src="assets/images/home/setting_button.png"     alt="Settings" />
-      </button>
-      <button class="icon-btn" title="Achievements" onclick="openAchievements()">
-        <img src="assets/images/home/achievement_button.png" alt="Achievements" />
       </button>
       <button class="icon-btn" title="Show Cards"   onclick="showCards()">
         <img src="assets/images/home/showcard_button.png"    alt="Show Cards" />
@@ -174,7 +184,7 @@
 
       <div class="cls-header">
         <h2 class="cls-title" id="cls-title">Card List</h2>
-        <button class="cls-close" onclick="closeCards()">✕</button>
+        <button class="cls-close" onclick="closeCards()" aria-label="Close card list">✕</button>
       </div>
 
       <div class="cls-tabs" id="cls-tabs"></div>
@@ -189,7 +199,7 @@
     <div class="load-modal-panel">
       <div class="load-modal-header">
         <h2 class="load-modal-title">Load Game</h2>
-        <button class="load-modal-close" onclick="closeLoadScreen()">✕</button>
+        <button class="load-modal-close" onclick="closeLoadScreen()" aria-label="Close">✕</button>
       </div>
       <div id="load-save-list" class="load-save-list"></div>
     </div>
@@ -214,6 +224,14 @@
       </div>
 
       <button class="settings-close-btn" onclick="closeSettings()">Close</button>
+    </div>
+  </div>
+
+  <!-- Portrait-phone hint — visibility handled purely by CSS media query -->
+  <div class="rotate-hint" role="status">
+    <div>
+      <div class="rotate-hint-icon">🔄</div>
+      หมุนอุปกรณ์เป็นแนวนอน<br />Please rotate your device
     </div>
   </div>
 

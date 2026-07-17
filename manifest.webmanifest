@@ -1,0 +1,15 @@
+{
+  "name": "BrainBlooming",
+  "short_name": "BrainBlooming",
+  "description": "A bilingual (Thai/English) digital board game promoting body, brain, and social health for elderly players.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#f5c8a0",
+  "theme_color": "#f5c8a0",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

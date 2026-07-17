@@ -9,6 +9,7 @@ function ptsLabel() {
 }
 function mapSetLang(lang) {
   localStorage.setItem('cardLang', lang);
+  document.documentElement.lang = lang === 'th' ? 'th' : 'en';
   document.getElementById('map-lang-en').classList.toggle('active', lang === 'en');
   document.getElementById('map-lang-th').classList.toggle('active', lang === 'th');
   // Refresh all score displays

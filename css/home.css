@@ -711,3 +711,29 @@ body {
   white-space: nowrap;
   font-family: Georgia, serif;
 }
+
+/* ── Portrait-phone rotate hint ──
+   Note: the viewport is pinned to width=1024, so width-based media
+   queries never match — orientation + coarse pointer is the signal. */
+.rotate-hint { display: none; }
+@media (orientation: portrait) and (pointer: coarse) {
+  .rotate-hint {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #1a0e00;
+    color: #ffe68c;
+    font-family: 'Noto Sans Thai', Georgia, sans-serif;
+    font-size: 4.5vw;
+    line-height: 1.7;
+    padding: 4vw;
+  }
+  .rotate-hint-icon {
+    font-size: 10vw;
+    margin-bottom: 2.5vw;
+  }
+}

@@ -36,7 +36,7 @@ function renderLoadList() {
         <span class="load-save-names">${(s.playerNames || []).join(' · ') || 'Players'}</span>
         <span class="load-save-date">${s.savedAt || ''}</span>
       </button>
-      <button class="load-save-delete" onclick="deleteSave('${s.id}')" title="Delete">🗑</button>
+      <button class="load-save-delete" onclick="deleteSave('${s.id}')" title="Delete" aria-label="Delete save">🗑</button>
     </div>
   `).join('');
 }
@@ -104,11 +104,10 @@ function setCardLang(lang) {
 }
 function updateLangButtons() {
   const lang = localStorage.getItem('cardLang') || 'en';
+  document.documentElement.lang = lang === 'th' ? 'th' : 'en';
   document.getElementById('lang-en').classList.toggle('active', lang === 'en');
   document.getElementById('lang-th').classList.toggle('active', lang === 'th');
 }
-
-function openAchievements() { console.log('Achievements'); }
 
 // ── Card list ──
 const HOME_THEMES = {
@@ -179,10 +178,10 @@ function filterCardList(cat, btn) {
     return `
       <div class="cls-card-wrap">
         <div class="card-popup cls-no-anim">
-          <img class="card-bg-img" src="${theme.bgImg}" alt="" />
+          <img class="card-bg-img" src="${theme.bgImg}" alt="" loading="lazy" decoding="async" />
           <div class="card-inner">
             <div class="card-illus-wrap">
-              <img class="card-illus-img" src="${illustSrc}" alt="${card.title}" />
+              <img class="card-illus-img" src="${illustSrc}" alt="${card.title}" loading="lazy" decoding="async" />
             </div>
             <div class="card-content-panel">
               <div class="card-top-row">

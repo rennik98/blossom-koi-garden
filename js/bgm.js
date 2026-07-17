@@ -10,7 +10,7 @@ const BGM = (() => {
 
   function getAudio() {
     if (!_audio) {
-      _audio = new Audio('assets/images/music/bgmusic.mp3');
+      _audio = new Audio('assets/images/music/bgmusic.m4a');
       _audio.loop   = true;
       _audio.volume = 0.45;
     }
