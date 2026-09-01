@@ -199,7 +199,6 @@ function showCardPopup(spaceType, playerIndex) {
   buildPopup(deck, card, playerIndex);
   SFX.cardFlip();
   document.getElementById('card-overlay').classList.add('active');
-  if (typeof bloomRefreshContextLine === 'function') bloomRefreshContextLine();
 }
 
 // ── Build popup HTML ──
@@ -762,7 +761,6 @@ function closeCardPopup() {
   activeCard           = null;
   currentCardPlayerIdx = -1;
   document.getElementById('card-overlay').classList.remove('active');
-  if (typeof bloomRefreshContextLine === 'function') bloomRefreshContextLine();
 }
 
 // ── Toast notification ──
