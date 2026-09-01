@@ -24,6 +24,9 @@
     "url": "https://github.com/rennik98/BrainBlooming/issues"
   },
   "homepage": "https://github.com/rennik98/BrainBlooming#readme",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.122.0"
+  },
   "devDependencies": {
     "sharp": "^0.34.0",
     "vite": "^8.0.10"

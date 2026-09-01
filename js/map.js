@@ -14,6 +14,7 @@ function mapSetLang(lang) {
   document.getElementById('map-lang-th').classList.toggle('active', lang === 'th');
   // Refresh all score displays
   for (let i = 0; i < playerCount; i++) updateScore(i);
+  if (typeof bloomRefreshLang === 'function') bloomRefreshLang();
 }
 function mapInitLang() {
   const lang = localStorage.getItem('cardLang') || 'en';

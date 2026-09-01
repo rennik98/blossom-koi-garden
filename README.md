@@ -12,6 +12,7 @@
 - Automated dice, token movement, scoring, voting, and win detection
 - Save/resume via `localStorage`; background music + procedural sound effects
 - **Installable PWA with full offline play** — everything (art, fonts, music) is precached by a service worker, so it keeps working on flaky venue Wi-Fi
+- **"Ask Bloom" AI facilitator** — an in-game chat widget (Claude API) that answers questions about the current card or the rules, in the player's chosen language
 
 ## Quick start
 
@@ -23,6 +24,14 @@ npm run dev        # Vite dev server (or use any static server, e.g. npx serve .
 Pages: `/` (home), `/map.html` (game board), `/cards-pdf.html` (printable card reference — open → Ctrl+P → save as PDF).
 
 Append `?debug` to the map URL to reveal the 🧪 card test panel (draw any specific card).
+
+## AI facilitator ("Ask Bloom")
+
+`js/ai-facilitator.js` is a floating chat widget on the game board; it calls the serverless function `api/facilitator.mjs`, which is the only thing that talks to the Claude API — the API key never reaches the browser.
+
+- Set `ANTHROPIC_API_KEY` (required) and optionally `FACILITATOR_MODEL` (defaults to `claude-opus-5`) — see `.env.example`.
+- `npm run dev` (plain Vite) does **not** serve `/api/*` routes. To test the facilitator locally, install the Vercel CLI and run `vercel dev` instead, with `.env.local` populated from `.env.example`.
+- In production (Vercel), set the same variables under Project Settings → Environment Variables.
 
 ## Asset pipeline
 
