@@ -239,16 +239,17 @@
 
 /* ── Instructions ── */
 .card-instruction-en {
-  font-size: clamp(15px, calc(1.9 * var(--vw, 10.24px)), 23px);
-  line-height: 1.62;
-  color: rgba(0,0,0,0.82);
-  font-weight: 500;
+  font-size: clamp(17px, calc(2.3 * var(--vw, 10.24px)), 27px);
+  line-height: 1.55;
+  color: rgba(0,0,0,0.88);
+  font-weight: 600;
   flex: 1;          /* fill available vertical space */
 }
 .card-instruction-th {
-  font-size: clamp(13px, calc(1.5 * var(--vw, 10.24px)), 18px);
-  line-height: 1.62;
-  color: rgba(0,0,0,0.7);
+  font-size: clamp(15px, calc(1.9 * var(--vw, 10.24px)), 22px);
+  line-height: 1.55;
+  color: rgba(0,0,0,0.82);
+  font-weight: 600;
   font-family: 'Noto Sans Thai', sans-serif;
   flex: 1;
 }
@@ -341,8 +342,10 @@
 .card-btn:active { transform: scale(0.96); }
 
 .card-btn-success  { background: #2e7d32; color: #fff; box-shadow: 0 4px 14px rgba(46,125,50,0.4); }
-.card-btn-fail     { background: rgba(0,0,0,0.15); color: rgba(0,0,0,0.7); border: 2px solid rgba(0,0,0,0.2); }
-.card-btn-pass     { background: rgba(0,0,0,0.1);  color: rgba(0,0,0,0.6); border: 2px solid rgba(0,0,0,0.15); }
+.card-btn-fail     { background: rgba(0,0,0,0.24); color: #fff; border: 2px solid rgba(0,0,0,0.3); text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+/* Solid brown fill — the old translucent-black chip was near-invisible against
+   the light card backgrounds (used for Draw / No Winner / dismiss actions). */
+.card-btn-pass     { background: #6d4c2f; color: #fff; border: 2px solid rgba(255,255,255,0.4); box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
 .card-btn-confirm  { background: #1565c0; color: #fff; box-shadow: 0 4px 14px rgba(21,101,192,0.4); }
 
 .card-minigame-winner-label {

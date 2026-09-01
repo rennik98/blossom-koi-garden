@@ -14,6 +14,7 @@ function mapSetLang(lang) {
   document.getElementById('map-lang-th').classList.toggle('active', lang === 'th');
   // Refresh all score displays
   for (let i = 0; i < playerCount; i++) updateScore(i);
+  updateBoardProgress();
 }
 function mapInitLang() {
   const lang = localStorage.getItem('cardLang') || 'en';
@@ -47,11 +48,13 @@ const PLAYER_NAMES = (() => {
 })();
 
 // ── Token offsets (so players don't stack on same space) ──
+// Wide enough that same-space tokens (esp. the 2 starting tokens) read as
+// clearly separate, not one overlapping blob.
 const TOKEN_OFFSETS = [
-  { dx: -2.5, dy: -2.0 },
-  { dx:  2.5, dy: -2.0 },
-  { dx: -2.5, dy:  2.0 },
-  { dx:  2.5, dy:  2.0 },
+  { dx: -3.6, dy: -2.8 },
+  { dx:  3.6, dy: -2.8 },
+  { dx: -3.6, dy:  2.8 },
+  { dx:  3.6, dy:  2.8 },
 ];
 
 // ── SPACES — exact coordinates from Figma ──
@@ -261,6 +264,10 @@ function renderScoreBar() {
         <span class="chip-score" id="score-val-${i}">0 ${ptsLabel()}</span>
       </div>
     `;
+    // Baseline for the score-pop delta — captured here (after any save-restore
+    // has already applied to `scores[]`, before gameplay can change it again)
+    // so the first real score change shows the correct +N/-N, not +0.
+    _prevScores[i] = scores[i];
     document.getElementById(i < leftCount ? 'score-left' : 'score-right').appendChild(chip);
   }
 }
@@ -281,12 +288,42 @@ function updateTurnLabel() {
     chip.classList.toggle('active-turn', i === currentTurn);
     chip.classList.toggle('frozen', frozenPlayers[i]);
   });
+  updateBoardProgress();
 }
 
-// ── Update a player's score display ──
+// ── Update a player's score display (+ a floating +N/-N pop when it changes) ──
+const _prevScores = [];
 function updateScore(playerIndex) {
   const el = document.getElementById(`score-val-${playerIndex}`);
-  if (el) el.textContent = scores[playerIndex] + ' ' + ptsLabel();
+  if (!el) return;
+  const newVal  = scores[playerIndex];
+  const prevVal = _prevScores[playerIndex] ?? newVal;
+  const delta   = newVal - prevVal;
+  el.textContent = newVal + ' ' + ptsLabel();
+  if (delta !== 0) showScorePop(playerIndex, delta);
+  _prevScores[playerIndex] = newVal;
+}
+
+function showScorePop(playerIndex, delta) {
+  const chip = document.getElementById(`score-chip-${playerIndex}`);
+  if (!chip) return;
+  const pop = document.createElement('span');
+  pop.className   = 'score-pop ' + (delta > 0 ? 'score-pop-up' : 'score-pop-down');
+  pop.textContent = (delta > 0 ? '+' : '') + delta;
+  chip.appendChild(pop);
+  pop.addEventListener('animationend', () => pop.remove());
+}
+
+// ── Progress indicator — how far the current player has walked ──
+function updateBoardProgress() {
+  const el = document.getElementById('board-progress');
+  if (!el) return;
+  const maxSpace = SPACES.length - 1;
+  const pos      = positions[currentTurn] || 0;
+  const th       = localStorage.getItem('cardLang') === 'th';
+  el.querySelector('.board-progress-label').textContent = th ? 'ระยะทาง' : 'Progress';
+  el.querySelector('.board-progress-count').textContent = `${pos} / ${maxSpace}`;
+  el.querySelector('.board-progress-fill').style.width  = (pos / maxSpace * 100) + '%';
 }
 
 // ── Roll dice ──
@@ -331,6 +368,7 @@ function movePlayer(steps) {
     SFX.tokenStep();
     const token = document.getElementById(`token-${currentTurn}`);
     placeToken(token, positions[currentTurn], currentTurn);
+    updateBoardProgress();
   }, 350);
 }
 

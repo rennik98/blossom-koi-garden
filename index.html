@@ -131,12 +131,24 @@
     </div>
 
     <div class="bottom-btns">
-      <button class="icon-btn" title="Settings"     onclick="openSettings()">
-        <img src="assets/images/home/setting_button.png"     alt="Settings" />
+      <button class="icon-btn" title="Settings" onclick="openSettings()">
+        <img src="assets/images/home/setting_button.png" alt="Settings" />
+        <span class="icon-btn-label" data-en="Settings" data-th="ตั้งค่า">Settings</span>
       </button>
-      <button class="icon-btn" title="Show Cards"   onclick="showCards()">
-        <img src="assets/images/home/showcard_button.png"    alt="Show Cards" />
+      <button class="icon-btn" title="How to Play" onclick="openHowTo()">
+        <span class="icon-emoji" aria-hidden="true">📖</span>
+        <span class="icon-btn-label" data-en="How to Play" data-th="วิธีเล่น">How to Play</span>
       </button>
+      <button class="icon-btn" title="Show Cards" onclick="showCards()">
+        <img src="assets/images/home/showcard_button.png" alt="Show Cards" />
+        <span class="icon-btn-label" data-en="Show Cards" data-th="ดูการ์ด">Show Cards</span>
+      </button>
+    </div>
+
+    <!-- ── HOME LANGUAGE TOGGLE (top-left) ── -->
+    <div class="home-lang-toggle">
+      <button id="home-lang-en" class="lang-btn" onclick="setCardLang('en')">EN</button>
+      <button id="home-lang-th" class="lang-btn" onclick="setCardLang('th')">TH</button>
     </div>
 
   </div>
@@ -170,8 +182,11 @@
 
       </div>
 
-      <!-- Name inputs — right-side vertical stack, outside the panel -->
-      <div id="name-inputs" class="name-inputs-col" style="display:none"></div>
+      <!-- Name inputs — right-side vertical stack, visually attached to the panel -->
+      <div id="name-inputs-panel" class="name-inputs-panel" style="display:none">
+        <div class="name-inputs-title" data-en="Player Names" data-th="ชื่อผู้เล่น">Player Names</div>
+        <div id="name-inputs" class="name-inputs-col"></div>
+      </div>
 
     </div>
   </div>
@@ -202,6 +217,44 @@
         <button class="load-modal-close" onclick="closeLoadScreen()" aria-label="Close">✕</button>
       </div>
       <div id="load-save-list" class="load-save-list"></div>
+    </div>
+  </div>
+
+  <!-- ── HOW TO PLAY MODAL ── -->
+  <div id="howto-modal" class="howto-overlay" onclick="closeHowTo(event)">
+    <div class="howto-panel">
+      <h2 class="howto-title" data-en="How to Play" data-th="วิธีเล่น">How to Play</h2>
+      <div class="howto-steps">
+        <div class="howto-step">
+          <span class="howto-step-num">1</span>
+          <span class="howto-step-text" data-en="Roll the dice and move your token around the board."
+                data-th="ทอยลูกเต๋าแล้วเดินโทเค็นของคุณไปตามช่องบนกระดาน">
+            Roll the dice and move your token around the board.
+          </span>
+        </div>
+        <div class="howto-step">
+          <span class="howto-step-num">2</span>
+          <span class="howto-step-text" data-en="Draw a card matching the space you land on — Body, Brain, Social, or Duel."
+                data-th="จั่วการ์ดตามช่องที่หยุด — ร่างกาย สมอง สังคม หรือดวล">
+            Draw a card matching the space you land on — Body, Brain, Social, or Duel.
+          </span>
+        </div>
+        <div class="howto-step">
+          <span class="howto-step-num">3</span>
+          <span class="howto-step-text" data-en="Complete the activity together, then vote or confirm the result to earn points."
+                data-th="ทำภารกิจร่วมกัน แล้วโหวตหรือยืนยันผลเพื่อรับคะแนน">
+            Complete the activity together, then vote or confirm the result to earn points.
+          </span>
+        </div>
+        <div class="howto-step">
+          <span class="howto-step-num">4</span>
+          <span class="howto-step-text" data-en="Reach the finish line — the player with the highest score wins!"
+                data-th="ไปให้ถึงเส้นชัย — ผู้เล่นที่มีคะแนนสูงสุดเป็นผู้ชนะ!">
+            Reach the finish line — the player with the highest score wins!
+          </span>
+        </div>
+      </div>
+      <button class="settings-close-btn" data-en="Got it!" data-th="เข้าใจแล้ว!" onclick="closeHowTo()">Got it!</button>
     </div>
   </div>
 

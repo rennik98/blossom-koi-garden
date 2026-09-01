@@ -184,15 +184,55 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 72px;
   transition: transform 0.2s ease, filter 0.2s ease;
 }
 .icon-btn img {
   width: clamp(64px, calc(8 * var(--vw, 10.24px)), 112px);
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45));
 }
+.icon-btn .icon-emoji {
+  width: clamp(64px, calc(8 * var(--vw, 10.24px)), 112px);
+  height: clamp(64px, calc(8 * var(--vw, 10.24px)), 112px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(30px, calc(4 * var(--vw, 10.24px)), 52px);
+  border-radius: 50%;
+  background: rgba(255, 248, 228, 0.7);
+  border: 2px solid rgba(180, 120, 40, 0.5);
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+}
+.icon-btn-label {
+  font-family: Georgia, serif;
+  font-size: clamp(11px, calc(1.1 * var(--vw, 10.24px)), 14px);
+  font-weight: bold;
+  color: #5d3a00;
+  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
 .icon-btn:hover  { transform: scale(1.12) rotate(-4deg); filter: brightness(1.1); }
 .icon-btn:active { transform: scale(0.93); }
+
+/* ── Home language toggle (top-left, mirrors fullscreen-btn) ── */
+.home-lang-toggle {
+  position: fixed;
+  top: 1.5%;
+  left: 1.5%;
+  z-index: 200;
+  display: flex;
+  gap: 6px;
+}
+.home-lang-toggle .lang-btn {
+  padding: 6px 16px;
+  background: rgba(255, 248, 228, 0.85);
+  backdrop-filter: blur(4px);
+}
 
 /* ============================================================
    PLAYER SELECTION SCREEN
@@ -229,6 +269,7 @@ body {
 }
 
 .player-choice {
+  position: relative;
   background: none;
   border: none;
   cursor: pointer;
@@ -239,6 +280,25 @@ body {
 .player-choice.selected {
   transform: scale(1.1);
   filter: brightness(1.15) drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
+}
+/* Explicit checkmark badge — the glow alone is too subtle to read at a glance */
+.player-choice.selected::after {
+  content: '✓';
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #2e7d32;
+  color: #fff;
+  border: 2px solid #fff;
+  font-size: 18px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
 /* Confirm button */
@@ -364,6 +424,73 @@ body {
   transition: filter 0.15s;
 }
 .settings-close-btn:hover { filter: brightness(1.1); }
+
+/* ============================================================
+   HOW TO PLAY MODAL
+============================================================ */
+.howto-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+.howto-overlay.active { display: flex; }
+
+.howto-panel {
+  background: rgba(255, 248, 228, 0.97);
+  border: 2px solid rgba(180, 120, 40, 0.5);
+  border-radius: 20px;
+  padding: 32px 40px;
+  width: clamp(360px, calc(42 * var(--vw, 10.24px)), 620px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+.howto-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(20px, calc(2.2 * var(--vw, 10.24px)), 28px);
+  font-weight: 900;
+  color: #5d3a00;
+  letter-spacing: 1px;
+  margin: 0;
+}
+.howto-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+.howto-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.howto-step-num {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #c07800;
+  color: #fff;
+  font-family: Georgia, serif;
+  font-weight: 900;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.howto-step-text {
+  font-family: 'Noto Sans Thai', Georgia, sans-serif;
+  font-size: clamp(14px, calc(1.4 * var(--vw, 10.24px)), 17px);
+  line-height: 1.5;
+  color: #3d2400;
+  padding-top: 4px;
+}
 
 /* ============================================================
    CARD LIST OVERLAY
@@ -548,17 +675,37 @@ body {
   filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.5));
 }
 
-/* ── Player name inputs — right-side vertical stack ── */
-.name-inputs-col {
+/* ── Player name inputs panel — attached to the wooden selection panel ── */
+.name-inputs-panel {
   position: absolute;
-  right: 1.2%;
+  left: calc(50% + clamp(320px, calc(32 * var(--vw, 10.24px)), 520px));
   top: 50%;
   transform: translateY(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+  background: linear-gradient(160deg, rgba(120, 78, 30, 0.92), rgba(80, 50, 15, 0.92));
+  border: 2px solid rgba(255, 215, 130, 0.5);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+}
+.name-inputs-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(12px, calc(1.2 * var(--vw, 10.24px)), 15px);
+  font-weight: 800;
+  color: #ffe6a3;
+  text-align: center;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.name-inputs-col {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  align-items: flex-end;
-  z-index: 20;
+  align-items: stretch;
 }
 
 .name-input-wrap {

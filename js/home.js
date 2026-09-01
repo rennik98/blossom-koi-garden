@@ -98,15 +98,36 @@ function closeSettings(e) {
   if (e && e.target !== document.getElementById('settings-modal')) return;
   document.getElementById('settings-modal').classList.remove('active');
 }
+
+// ── How to Play ──
+function openHowTo() {
+  SFX.click();
+  updateLangButtons();
+  document.getElementById('howto-modal').classList.add('active');
+}
+function closeHowTo(e) {
+  if (e && e.target !== document.getElementById('howto-modal')) return;
+  SFX.click();
+  document.getElementById('howto-modal').classList.remove('active');
+}
 function setCardLang(lang) {
   localStorage.setItem('cardLang', lang);
   updateLangButtons();
 }
 function updateLangButtons() {
   const lang = localStorage.getItem('cardLang') || 'en';
-  document.documentElement.lang = lang === 'th' ? 'th' : 'en';
-  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
-  document.getElementById('lang-th').classList.toggle('active', lang === 'th');
+  const th   = lang === 'th';
+  document.documentElement.lang = th ? 'th' : 'en';
+  document.getElementById('lang-en').classList.toggle('active', !th);
+  document.getElementById('lang-th').classList.toggle('active', th);
+  document.getElementById('home-lang-en')?.classList.toggle('active', !th);
+  document.getElementById('home-lang-th')?.classList.toggle('active', th);
+
+  // Refresh every bilingual [data-en]/[data-th] element on the page
+  // (icon labels, How-to-Play modal, name-inputs panel title, etc.)
+  document.querySelectorAll('[data-en][data-th]').forEach(el => {
+    el.textContent = th ? el.dataset.th : el.dataset.en;
+  });
 }
 
 // ── Card list ──
@@ -205,6 +226,7 @@ function closePlayerSelection() {
   SFX.click();
   selectedPlayers = 0;
   document.querySelectorAll('.player-choice').forEach(btn => btn.classList.remove('selected'));
+  document.getElementById('name-inputs-panel').style.display = 'none';
   showScreen('home-screen');
 }
 
@@ -230,7 +252,7 @@ function selectCount(num, btn) {
       <input class="name-input" id="name-p${i}" type="text"
              placeholder="${DEFAULT_NAMES[i]}" maxlength="16" />
     </div>`).join('');
-  container.style.display = 'flex';
+  document.getElementById('name-inputs-panel').style.display = 'flex';
 }
 
 function confirmSelection() {
